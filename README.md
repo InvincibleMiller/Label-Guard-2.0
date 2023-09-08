@@ -1,34 +1,17 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Label Guard 2.0!
 
-## Getting Started
+## About
 
-First, run the development server:
+Label Guard is a full stack Web App used to track violations and repeat violations within a restaurant setting. It supports multi-restaurant administration, meaning that administration can host and track data for multiple restaurants using just one account. It obviously supports User Authentication, and it comes with a clean and modern dashboard to view and manage your restaurant's data: inventory, custom violations, and shifts. The app also comes with password protected form generation, on a per-restaurant basis so that restaurant's can perform "Label Checks" during any given shift, and thereby report findings to the app.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+## Tech Stack
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Back Story
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Versions 1.x were unfortunately lacking in design, such that integrating Stripe subscriptions was unnecessarily complicated. The solution was to rebuild the entire app, nearly from the ground up in a sustainable, scalable way so that the source can easily grow with Label Guard as a commercial application.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### 2.0
 
-## Learn More
+Label Guard versions 2.0+ use Fauna DB, Express.js, Next.js and Bootstrap.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+This specific tech stack is absolutely incredible because it allows the benefits of Next.js, specifically dynamically rendering content, to be coupled with the versatility of Express.js as a backend. Fauna DB is serverless; it's an incredibly secure and fast document based, relational database.
