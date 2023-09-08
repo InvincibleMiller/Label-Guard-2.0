@@ -8,14 +8,15 @@ const dev = process.env.NODE_ENV !== "production";
 const nextApp = next({ dev });
 const handle = nextApp.getRequestHandler();
 
+// import all express api routes here
+const test = require("./backend/routes/test");
+
 // running the app, async operation
 nextApp.prepare().then(() => {
   const app = express();
 
   // this is a test API route
-  app.get("/api/test", (req, res) => {
-    res.json({ message: "This is a test API route" });
-  });
+  app.get("/api/test", test.get);
 
   // redirecting all requests to Next.js
   app.all("*", (req, res) => {

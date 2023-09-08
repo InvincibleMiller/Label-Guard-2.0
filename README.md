@@ -6,12 +6,18 @@ Label Guard is a full stack Web App used to track violations and repeat violatio
 
 ## Tech Stack
 
-### Back Story
-
-Versions 1.x were unfortunately lacking in design, such that integrating Stripe subscriptions was unnecessarily complicated. The solution was to rebuild the entire app, nearly from the ground up in a sustainable, scalable way so that the source can easily grow with Label Guard as a commercial application.
-
 ### 2.0
 
 Label Guard versions 2.0+ use Fauna DB, Express.js, Next.js and Bootstrap.
 
 This specific tech stack is absolutely incredible because it allows the benefits of Next.js, specifically dynamically rendering content, to be coupled with the versatility of Express.js as a backend. Fauna DB is serverless; it's an incredibly secure and fast document based, relational database.
+
+Using Axios for HTTP requests on the back end and the front end.
+
+### Back Story
+
+Versions 1.x were unfortunately lacking in design, such that integrating Stripe subscriptions was unnecessarily complicated. The solution was to rebuild the entire app, nearly from the ground up in a sustainable, scalable way so that the source can easily grow with Label Guard as a commercial application.
+
+## Development
+
+This app is developed with the Agile project methodology, using Trello kanbans for project organization.
