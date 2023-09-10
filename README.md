@@ -12,7 +12,7 @@ Label Guard versions 2.0+ use Fauna DB, Express.js, Next.js and Bootstrap.
 
 This specific tech stack is absolutely incredible because it allows the benefits of Next.js, specifically dynamically rendering content, to be coupled with the versatility of Express.js as a backend. Fauna DB is serverless; it's an incredibly secure and fast document based, relational database.
 
-Using Axios for HTTP requests on the back end and the front end.
+Using React Hook Form for client side forms.
 
 ### Back Story
 

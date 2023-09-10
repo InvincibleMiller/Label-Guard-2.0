@@ -2,16 +2,20 @@
 
 import { Fetcher } from "@/util/fetchHelpers";
 import { useForm } from "react-hook-form";
-import { TextInput } from "@/components/FormFields";
+import { TextInput, TextAreaInput } from "@/components/FormFields";
 
 export default function page() {
   const form = useForm();
   const { handleSubmit } = form;
 
   function onSubmit(payload) {
-    Fetcher.post(process.env.NEXT_PUBLIC_URL + "api/login", payload, {
-      Accept: "text/*",
-    })
+    Fetcher.post(
+      process.env.NEXT_PUBLIC_URL + "api/auth/register-location",
+      payload,
+      {
+        Accept: "text/*",
+      }
+    )
       .then((res) => {
         if (res.redirected) {
           window.location.href = res.url;
@@ -31,22 +35,21 @@ export default function page() {
       <form className="row w-lg-50" onSubmit={handleSubmit(onSubmit)}>
         <div className="col">
           <TextInput
-            id="email"
-            title="Email"
+            id="name"
+            title="Location Name"
             form={form}
-            placeHolder="johndoe@gmail.com"
+            placeHolder="Some Restaurant"
             options={{ required: "required" }}
           />
-          <TextInput
-            id="password"
-            title="Password"
-            type="password"
+          <TextAreaInput
+            id="description"
+            title="Description"
             form={form}
-            options={{ required: "required" }}
+            options={{ required: "required", maxLength: 80 }}
           />
           <div className="text-center">
             <button className="btn btn-primary" type="submit">
-              Login
+              Continue
             </button>
           </div>
         </div>
