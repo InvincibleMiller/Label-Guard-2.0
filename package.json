@@ -12,6 +12,7 @@
     "body-parser": "^1.20.2",
     "bootstrap": "^5.3.1",
     "cookie-parser": "^1.4.6",
+    "crypto-js": "^4.1.1",
     "dotenv-flow": "^3.3.0",
     "express": "^4.18.2",
     "fauna": "^1.2.0",
@@ -19,13 +20,12 @@
     "nodemon": "^3.0.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-hook-form": "^7.46.1"
+    "react-hook-form": "^7.46.1",
+    "stripe": "^13.5.0"
   },
   "nodemonConfig": {
     "ignore": [
-      ".*",
-      "app/**",
-      "components/**"
+      "./app/"
     ],
     "delay": 1
   }

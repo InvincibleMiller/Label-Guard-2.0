@@ -8,26 +8,19 @@ export default function page() {
   const form = useForm();
   const { handleSubmit } = form;
 
-  function onSubmit(payload) {
-    Fetcher.post(
-      process.env.NEXT_PUBLIC_URL + "api/auth/register-location",
-      payload,
-      {
-        Accept: "text/*",
-      }
-    )
-      .then((res) => {
-        if (res.redirected) {
-          window.location.href = res.url;
-        }
+  async function onSubmit(payload) {
+    try {
+      const session = await Fetcher.post(
+        process.env.NEXT_PUBLIC_URL + "api/auth/register-location",
+        payload
+      );
 
-        return res.json();
-      })
-      .then((json) => {
-        if (json.status !== 200) {
-          console.error(`${json.status} : ${json.message}`);
-        }
-      });
+      const { checkoutURL } = await session.json();
+
+      window.location.href = checkoutURL;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (

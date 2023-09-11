@@ -2,7 +2,7 @@ const { fql } = require("fauna");
 const { logout: faunaLogout } = require("../../fauna/queries");
 
 const logout = {
-  post: async (req, res) => {
+  post: async (req, res, next) => {
     try {
       // delete the token on Fauna DB
       const faunaLogout_result = await faunaLogout(req.faunaClient);

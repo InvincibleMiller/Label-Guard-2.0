@@ -76,11 +76,25 @@ async function logout(_client) {
 }
 
 async function getUserId(_client) {
-  const user_id_query = fql`Administrators.all().first() {id}`;
+  const user_id_query = fql`Administrators.all().first()`;
 
-  const { id } = (await _client.query(user_id_query)).data;
+  const user_document = (await _client.query(user_id_query)).data;
 
-  return id;
+  return user_document;
 }
 
-module.exports = { registerAdmin, loginAdmin, logout, getUserId };
+async function createLocationDocument(data) {
+  const create_location_query = fql`Locations.create(${data})`;
+
+  const create_location_result = await client.query(create_location_query);
+
+  return create_location_result;
+}
+
+module.exports = {
+  registerAdmin,
+  loginAdmin,
+  logout,
+  getUserId,
+  createLocationDocument,
+};

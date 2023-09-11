@@ -19,10 +19,11 @@ const { checkLogin } = require("./backend/middleware/checkLogin");
 // express api functions
 const register = require("./backend/routes/register");
 const login = require("./backend/routes/login");
-const logout = require("./backend/routes/auth/logout");
 
 // "auth" api functions
+const logout = require("./backend/routes/auth/logout");
 const registerLocation = require("./backend/routes/auth/registerLocation");
+const checkout = require("./backend/routes/auth/checkout");
 
 // running the app, async operation
 nextApp.prepare().then(() => {
@@ -47,12 +48,17 @@ nextApp.prepare().then(() => {
   // login existing user
   app.post("/api/login", login.post);
 
-  // API Routes that requires users to be logged
+  //
+  // # API Routes that requires users to be logged
+  //
+
   app.use("/api/auth", checkLogin());
   // logout api route
   app.post("/api/auth/logout", logout.post);
-  // register location api route
-  app.post("/api/auth/register-location", registerLocation.post);
+  // register location api route and redirect to checkout
+  app.post("/api/auth/register-location", registerLocation.post, checkout.post);
+  // checkout session api route
+  app.post("/api/auth/checkout", checkout.post);
 
   // redirecting all requests to Next.js
   app.use("/auth/", checkLogin("/login"));

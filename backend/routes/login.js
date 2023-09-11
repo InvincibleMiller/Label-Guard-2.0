@@ -1,9 +1,7 @@
-const { default: next } = require("next");
 const { loginAdmin } = require("../fauna/queries");
-const { redirect } = require("next/dist/server/api-utils");
 
 const login = {
-  post: async (req, res) => {
+  post: async (req, res, next) => {
     try {
       // Log the user in and store the session token
       const { email, password } = req.body;
@@ -38,7 +36,8 @@ const login = {
         signed: true, // Signs the cookie with a secret key
       });
 
-      res.redirect("/");
+      // TODO: This must point to the dashboard as soon as possible
+      res.redirect("/auth/dashboard");
       return;
     } catch (error) {
       console.error(error);

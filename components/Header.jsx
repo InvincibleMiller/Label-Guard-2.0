@@ -17,6 +17,11 @@ export default function Header() {
           {loggedIn ? (
             <>
               <li className="nav-item">
+                <Link className="nav-link" href="/auth/dashboard">
+                  Dashboard
+                </Link>
+              </li>
+              <li className="nav-item">
                 <LogoutButton />
               </li>
             </>

@@ -23,8 +23,9 @@ const checkLogin = (redirectPath) => async (req, res, next) => {
     return;
   }
 
+  // store the client and user document in the request object
   req.faunaClient = getFaunaClient(userToken);
-  req.userDocumentId = await getUserId(req.faunaClient);
+  req.userDocument = await getUserId(req.faunaClient);
 
   next();
   return;
