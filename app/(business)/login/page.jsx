@@ -27,27 +27,34 @@ export default function page() {
   }
 
   return (
-    <div className="container">
-      <form className="row w-lg-50" onSubmit={handleSubmit(onSubmit)}>
-        <div className="col">
-          <TextInput
-            id="email"
-            title="Email"
-            form={form}
-            placeHolder="johndoe@gmail.com"
-            options={{ required: "required" }}
-          />
-          <TextInput
-            id="password"
-            title="Password"
-            type="password"
-            form={form}
-            options={{ required: "required" }}
-          />
-          <div className="text-center">
-            <button className="btn btn-primary" type="submit">
-              Login
-            </button>
+    <div className="container screen-container">
+      <form
+        className="row w-100 justify-content-center align-items-center"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="col col-lg-6 card">
+          <div className="card-body">
+            <h4 className="mb-4 text-center">Login</h4>
+            <TextInput
+              id="email"
+              title="Email"
+              form={form}
+              placeHolder="somebody@email.com"
+              options={{ required: "required" }}
+            />
+            <TextInput
+              id="password"
+              title="Password"
+              type="password"
+              form={form}
+              placeHolder=""
+              options={{ required: "required" }}
+            />
+            <div className="text-center">
+              <button className="btn btn-primary" type="submit">
+                Login
+              </button>
+            </div>
           </div>
         </div>
       </form>

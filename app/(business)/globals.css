@@ -1,0 +1,6 @@
+.screen-container {
+  min-height: 100vh;
+  display: flex;
+  /* margin: auto; */
+  justify-content: center;
+}

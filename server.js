@@ -24,6 +24,7 @@ const login = require("./backend/routes/login");
 const logout = require("./backend/routes/auth/logout");
 const registerLocation = require("./backend/routes/auth/registerLocation");
 const checkout = require("./backend/routes/auth/checkout");
+const verifySubscription = require("./backend/routes/auth/verifySubscription");
 
 // running the app, async operation
 nextApp.prepare().then(() => {
@@ -59,6 +60,8 @@ nextApp.prepare().then(() => {
   app.post("/api/auth/register-location", registerLocation.post, checkout.post);
   // checkout session api route
   app.post("/api/auth/checkout", checkout.post);
+  // verify customer subscription
+  app.get("/api/auth/verify-subscription", verifySubscription.get);
 
   // redirecting all requests to Next.js
   app.use("/auth/", checkLogin("/login"));

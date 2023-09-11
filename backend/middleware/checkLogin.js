@@ -2,7 +2,7 @@
 // before allowing any server requests to access API endpoints that require
 // user authentication
 const { getFaunaClient } = require("../fauna/client");
-const { getUserId } = require("../fauna/queries");
+const { getUserDoc } = require("../fauna/queries");
 
 // get the redirect path and return a function that
 // will redirect you to the path you request if the user isn't logged in
@@ -17,7 +17,7 @@ const checkLogin = (redirectPath) => async (req, res, next) => {
     if (redirectPath) {
       res.redirect(redirectPath);
     } else {
-      res.status(403).send(message);
+      res.status(403).json(message);
     }
 
     return;
@@ -25,7 +25,7 @@ const checkLogin = (redirectPath) => async (req, res, next) => {
 
   // store the client and user document in the request object
   req.faunaClient = getFaunaClient(userToken);
-  req.userDocument = await getUserId(req.faunaClient);
+  req.userDocument = await getUserDoc(req.faunaClient);
 
   next();
   return;

@@ -27,60 +27,60 @@ export default function page() {
   }
 
   return (
-    <div className="container">
-      <form className="row w-lg-50" onSubmit={handleSubmit(onSubmit)}>
-        <div className="col">
-          <div className="row">
-            <div className="col">
-              <TextInput
-                id="first-name"
-                title="First Name"
-                type="text"
-                form={form}
-                options={{ required: "required" }}
-              />
+    <div className="container screen-container">
+      <form
+        className="row w-100 justify-content-center align-items-center"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="col col-lg-6 card">
+          <div className="card-body">
+            <h4 className="mb-4 text-center">Sign Up</h4>
+            <div className="row">
+              <div className="col-lg">
+                <TextInput
+                  id="first-name"
+                  title="First Name"
+                  type="text"
+                  form={form}
+                  options={{ required: "required" }}
+                />
+              </div>
+              <div className="col-lg">
+                <TextInput
+                  id="last-name"
+                  title="Last Name"
+                  type="text"
+                  form={form}
+                  options={{ required: "required" }}
+                />
+              </div>
             </div>
-            <div className="col">
-              <TextInput
-                id="last-name"
-                title="Last Name"
-                type="text"
-                form={form}
-                options={{ required: "required" }}
-              />
+            <TextInput
+              id="email"
+              title="Email"
+              form={form}
+              placeHolder="johndoe@gmail.com"
+              options={{ required: "required" }}
+            />
+            <TextInput
+              id="password"
+              title="Password"
+              type="password"
+              form={form}
+              options={{ required: "required" }}
+            />
+            <TextInput
+              id="confirm"
+              title="Confirm Password"
+              type="password"
+              form={form}
+              options={{ required: "required" }}
+            />
+            <div className="text-center">
+              <button className="btn btn-primary" type="submit">
+                Sign Up
+              </button>
             </div>
-          </div>
-          <TextInput
-            id="email"
-            title="Email"
-            form={form}
-            placeHolder="johndoe@gmail.com"
-            options={{ required: "required" }}
-          />
-          <div className="row">
-            <div className="col">
-              <TextInput
-                id="password"
-                title="Password"
-                type="password"
-                form={form}
-                options={{ required: "required" }}
-              />
-            </div>
-            <div className="col">
-              <TextInput
-                id="confirm"
-                title="Confirm Password"
-                type="password"
-                form={form}
-                options={{ required: "required" }}
-              />
-            </div>
-          </div>
-          <div className="text-center">
-            <button className="btn btn-primary" type="submit">
-              Sign Up
-            </button>
           </div>
         </div>
       </form>

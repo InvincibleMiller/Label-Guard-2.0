@@ -16,10 +16,11 @@ const checkout = {
       const stripe = getStripe();
 
       const session = await stripe.checkout.sessions.create({
-        success_url: process.env.NEXT_PUBLIC_URL + "dashboard",
+        success_url: process.env.NEXT_PUBLIC_URL + "auth/dashboard",
         line_items: [{ price: location_price, quantity: 1 }],
         mode: "subscription",
         customer: decryptedCustomerId,
+        billing_address_collection: "required",
       });
 
       // Send the checkout session back to the client

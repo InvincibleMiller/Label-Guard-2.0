@@ -24,26 +24,31 @@ export default function page() {
   }
 
   return (
-    <div className="container">
-      <form className="row w-lg-50" onSubmit={handleSubmit(onSubmit)}>
-        <div className="col">
-          <TextInput
-            id="name"
-            title="Location Name"
-            form={form}
-            placeHolder="Some Restaurant"
-            options={{ required: "required" }}
-          />
-          <TextAreaInput
-            id="description"
-            title="Description"
-            form={form}
-            options={{ required: "required", maxLength: 80 }}
-          />
-          <div className="text-center">
-            <button className="btn btn-primary" type="submit">
-              Continue
-            </button>
+    <div className="container screen-container">
+      <form
+        className="row w-100 justify-content-center align-items-center"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="col col-lg-6 card">
+          <div className="card-body">
+            <TextInput
+              id="name"
+              title="Location Name"
+              form={form}
+              placeHolder="Some Restaurant"
+              options={{ required: "required" }}
+            />
+            <TextAreaInput
+              id="description"
+              title="Description"
+              form={form}
+              options={{ required: "required", maxLength: 80 }}
+            />
+            <div className="text-center">
+              <button className="btn btn-primary" type="submit">
+                Continue
+              </button>
+            </div>
           </div>
         </div>
       </form>

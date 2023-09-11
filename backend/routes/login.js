@@ -1,4 +1,8 @@
-const { loginAdmin } = require("../fauna/queries");
+const {
+  loginAdmin,
+  userHasNoLocations,
+  getDefaultLocation,
+} = require("../fauna/queries");
 
 const login = {
   post: async (req, res, next) => {
@@ -19,7 +23,8 @@ const login = {
         return;
       }
 
-      const login_result = await loginAdmin(email, password);
+      // try logging in the user
+      const { data: login_result } = await loginAdmin(email, password);
 
       if (typeof login_result === "number") {
         res.status(login_result).json({
@@ -29,14 +34,36 @@ const login = {
         return;
       }
 
-      res.cookie(process.env.TOKEN_COOKIE, login_result.data.secret, {
+      // set this cookie for login persistence
+      res.cookie(process.env.TOKEN_COOKIE, login_result.secret, {
         httpOnly: true, // Cookie is only accessible via HTTP
         secure: true, // Requires HTTPS to send the cookie
         sameSite: "Lax", // Protects against CSRF attacks
         signed: true, // Signs the cookie with a secret key
       });
 
-      // TODO: This must point to the dashboard as soon as possible
+      const { data: hasNoLocations } = await userHasNoLocations(
+        login_result.document.id
+      );
+
+      if (hasNoLocations) {
+        // go to the location registry if the user hasn't subscribed
+        // to the service
+        res.redirect("/auth/register-location");
+        return;
+      }
+
+      // Make sure there is a location saved in this cooke
+      // before going to the dashboard
+      const locationId = req.cookies[process.env.LOCATION_ID_COOKIE];
+      if (locationId == undefined) {
+        const { data: locationDoc } = await getDefaultLocation(
+          login_result.document.id
+        );
+        res.cookie(process.env.LOCATION_ID_COOKIE, locationDoc.id);
+      }
+
+      // go to the dash
       res.redirect("/auth/dashboard");
       return;
     } catch (error) {

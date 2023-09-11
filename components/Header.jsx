@@ -8,7 +8,7 @@ export default function Header() {
   const loggedIn = cookieExists(process.env.TOKEN_COOKIE);
 
   return (
-    <header className="navbar navbar-expand-lg sticky-top">
+    <header className="navbar navbar-expand-lg fixed-top">
       <div className="container">
         <Link className="navbar-brand" href="/">
           Label Guard

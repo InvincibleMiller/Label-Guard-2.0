@@ -62,7 +62,7 @@ async function loginAdmin(email, password) {
       return error.httpStatus;
     }
 
-    return 500;
+    return 400;
   }
 }
 
@@ -75,10 +75,10 @@ async function logout(_client) {
   return logout_result;
 }
 
-async function getUserId(_client) {
+async function getUserDoc(_client) {
   const user_id_query = fql`Administrators.all().first()`;
 
-  const user_document = (await _client.query(user_id_query)).data;
+  const { data: user_document } = await _client.query(user_id_query);
 
   return user_document;
 }
@@ -91,10 +91,42 @@ async function createLocationDocument(data) {
   return create_location_result;
 }
 
+async function getLocationDocumentById(id) {
+  const query = fql`Locations.byId(${id})`;
+
+  const result = await client.query(query);
+
+  return result;
+}
+
+async function userHasNoLocations(user_id) {
+  const query = fql`Locations.where(.admin_id == ${user_id}).isEmpty()`;
+
+  const result = await client.query(query);
+
+  return result;
+}
+
+async function getDefaultLocation(user_id) {
+  try {
+    const query = fql`Locations.firstWhere(.admin_id == ${user_id})`;
+
+    const result = await client.query(query);
+
+    return result;
+  } catch (error) {
+    console.error(error);
+    return 500;
+  }
+}
+
 module.exports = {
   registerAdmin,
   loginAdmin,
   logout,
-  getUserId,
+  getUserDoc,
   createLocationDocument,
+  getLocationDocumentById,
+  userHasNoLocations,
+  getDefaultLocation,
 };
