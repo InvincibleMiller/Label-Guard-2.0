@@ -120,6 +120,22 @@ async function getDefaultLocation(user_id) {
   }
 }
 
+async function locationBelongsToUser(user_id, location_id) {
+  const check_query = fql`!Locations.where(.id == ${location_id} && .admin_id == ${user_id}).isEmpty()`;
+
+  const result = await client.query(check_query);
+
+  return result;
+}
+
+async function getAllFormsForLocation(location_id) {
+  const form_query = fql`Forms.where(.location_id == ${location_id}) {id, name, description}`;
+
+  const form_results = await client.query(form_query);
+
+  return form_results;
+}
+
 module.exports = {
   registerAdmin,
   loginAdmin,
@@ -129,4 +145,6 @@ module.exports = {
   getLocationDocumentById,
   userHasNoLocations,
   getDefaultLocation,
+  locationBelongsToUser,
+  getAllFormsForLocation,
 };

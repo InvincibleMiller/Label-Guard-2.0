@@ -78,7 +78,7 @@ export default function page() {
             />
             <div className="text-center">
               <button className="btn btn-primary" type="submit">
-                Sign Up
+                Continue to Location Registry
               </button>
             </div>
           </div>

@@ -2,6 +2,7 @@ const {
   loginAdmin,
   userHasNoLocations,
   getDefaultLocation,
+  locationBelongsToUser,
 } = require("../fauna/queries");
 
 const login = {
@@ -54,9 +55,17 @@ const login = {
       }
 
       // Make sure there is a location saved in this cooke
-      // before going to the dashboard
+      // before going to the dashboard and make sure it belongs
+      // to the user before allowing them to see it
       const locationId = req.cookies[process.env.LOCATION_ID_COOKIE];
-      if (locationId == undefined) {
+      const { data: userOwnsLocation } = await locationBelongsToUser(
+        login_result.document.id,
+        locationId
+      );
+
+      if (locationId == undefined || !userOwnsLocation) {
+        // The user doesn't own the location or there isn't one saved
+        // so pull one of their locations
         const { data: locationDoc } = await getDefaultLocation(
           login_result.document.id
         );

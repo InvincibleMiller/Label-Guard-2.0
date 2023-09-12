@@ -31,6 +31,7 @@ export default function page() {
       >
         <div className="col col-lg-6 card">
           <div className="card-body">
+            <h4 className="mb-4 text-center">Register Location</h4>
             <TextInput
               id="name"
               title="Location Name"
