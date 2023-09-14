@@ -21,7 +21,8 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.46.1",
-    "stripe": "^13.5.0"
+    "stripe": "^13.5.0",
+    "underscore.string": "^3.3.6"
   },
   "nodemonConfig": {
     "ignore": [

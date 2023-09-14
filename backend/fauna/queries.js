@@ -121,11 +121,25 @@ async function getDefaultLocation(user_id) {
 }
 
 async function locationBelongsToUser(user_id, location_id) {
-  const check_query = fql`!Locations.where(.id == ${location_id} && .admin_id == ${user_id}).isEmpty()`;
+  try {
+    const check_query = fql`!Locations.where(.id == ${location_id} && .admin_id == ${user_id}).isEmpty()`;
 
-  const result = await client.query(check_query);
+    const result = await client.query(check_query);
 
-  return result;
+    return result;
+  } catch (error) {
+    // just count the undefined errors as a no-ownership
+    if (
+      !user_id ||
+      !location_id ||
+      location_id == undefined ||
+      user_id == undefined
+    ) {
+      console.error(error);
+    }
+
+    return { data: false };
+  }
 }
 
 async function getAllFormsForLocation(location_id) {
@@ -134,6 +148,101 @@ async function getAllFormsForLocation(location_id) {
   const form_results = await client.query(form_query);
 
   return form_results;
+}
+
+async function getAllShiftsForLocation(location_id) {
+  const form_query = fql`Shifts.where(.location_id == ${location_id}) {id, name, minimum}`;
+
+  const form_results = await client.query(form_query);
+
+  return form_results;
+}
+
+async function createFormDoc(data) {
+  const create_doc_query = fql`Forms.create(${data})`;
+
+  const create_doc_result = await client.query(create_doc_query);
+
+  return create_doc_result;
+}
+
+async function createShiftDoc(data) {
+  const create_doc_query = fql`Shifts.create(${data})`;
+
+  const create_doc_result = await client.query(create_doc_query);
+
+  return create_doc_result;
+}
+
+const _getFQLCollection = (documentType) => {
+  switch (documentType.toUpperCase()) {
+    case "FORMS":
+      return fql`Forms`;
+      break;
+
+    case "SHIFTS":
+      return fql`Shifts`;
+      break;
+
+    default:
+      return null;
+  }
+};
+
+async function getDocument(document_id, documentType) {
+  let root = _getFQLCollection(documentType);
+
+  if (!root) {
+    return { data: root };
+  }
+
+  const document_query = fql`${root}.byId(${document_id})`;
+
+  const { data: document } = await client.query(document_query);
+
+  return document;
+}
+
+async function updateDocument(location_id, document_id, documentType, data) {
+  let root = _getFQLCollection(documentType);
+
+  if (!root) {
+    return { data: root };
+  }
+
+  const update_query = fql`
+                          let doc = ${root}.byId(${document_id})
+                          if (doc!.location_id == ${location_id}) {
+                            doc!.update(${data})
+                          } else {
+                            null
+                          }
+                        `;
+
+  const update_result = await client.query(update_query);
+
+  return update_result;
+}
+
+async function deleteDocument(location_id, document_id, documentType) {
+  let root = _getFQLCollection(documentType);
+
+  if (!root) {
+    return { data: root };
+  }
+
+  const delete_query = fql`
+                          let doc = ${root}.byId(${document_id})
+                          if (doc!.location_id == ${location_id}) {
+                            doc!.delete()
+                          } else {
+                            null
+                          }
+                        `;
+
+  const delete_results = await client.query(delete_query);
+
+  return delete_results;
 }
 
 module.exports = {
@@ -146,5 +255,11 @@ module.exports = {
   userHasNoLocations,
   getDefaultLocation,
   locationBelongsToUser,
+  getDocument,
+  updateDocument,
+  deleteDocument,
+  createFormDoc,
   getAllFormsForLocation,
+  createShiftDoc,
+  getAllShiftsForLocation,
 };

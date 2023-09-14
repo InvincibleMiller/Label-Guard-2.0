@@ -26,7 +26,14 @@ const registerLocation = require("./backend/routes/auth/registerLocation");
 const checkout = require("./backend/routes/auth/checkout");
 const verifySubscription = require("./backend/routes/auth/verifySubscription");
 
-const { getForms } = require("./backend/routes/auth/getForms");
+const { getForms, registerForm } = require("./backend/routes/auth/forms");
+const { getShifts, registerShift } = require("./backend/routes/auth/shifts");
+const {
+  getDocument,
+  updateFormDocument,
+  updateShiftDocument,
+  deleteDocument,
+} = require("./backend/routes/auth/document");
 
 // running the app, async operation
 nextApp.prepare().then(() => {
@@ -39,7 +46,7 @@ nextApp.prepare().then(() => {
   // useful middleware during development
   if (dev) {
     app.use("/api/", (req, res, next) => {
-      console.log(`${Date.now()} — HIT @/api${req.url}`);
+      console.log(`${Date.now()} — ${req.method} @/api${req.url}`);
 
       return next();
     });
@@ -66,6 +73,20 @@ nextApp.prepare().then(() => {
   app.get("/api/auth/verify-subscription", verifySubscription.get);
   // get forms for location
   app.get("/api/auth/get-forms", getForms);
+  // register a new form for the location
+  app.post("/api/auth/register-form", registerForm);
+  // get shifts for location
+  app.get("/api/auth/get-shifts", getShifts);
+  // register new shift for the location
+  app.post("/api/auth/register-shift", registerShift);
+  // get document route
+  app.get("/api/auth/edit/:documentID/:documentCollection", getDocument);
+  // route to update form documents owned by a location
+  app.post("/api/auth/update-form", updateFormDocument);
+  // route to update shift documents owned by a location
+  app.post("/api/auth/update-shift", updateShiftDocument);
+  // route to delete documents owned by the location
+  app.post("/api/auth/delete-document", deleteDocument);
 
   // redirecting all requests to Next.js
   app.use("/auth/", checkLogin("/login"));
