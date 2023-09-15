@@ -121,6 +121,10 @@ async function getDefaultLocation(user_id) {
 }
 
 async function locationBelongsToUser(user_id, location_id) {
+  if (user_id == undefined || location_id == undefined) {
+    return { data: false };
+  }
+
   try {
     const check_query = fql`!Locations.where(.id == ${location_id} && .admin_id == ${user_id}).isEmpty()`;
 
@@ -128,15 +132,7 @@ async function locationBelongsToUser(user_id, location_id) {
 
     return result;
   } catch (error) {
-    // just count the undefined errors as a no-ownership
-    if (
-      !user_id ||
-      !location_id ||
-      location_id == undefined ||
-      user_id == undefined
-    ) {
-      console.error(error);
-    }
+    console.error(error);
 
     return { data: false };
   }
@@ -152,6 +148,14 @@ async function getAllFormsForLocation(location_id) {
 
 async function getAllShiftsForLocation(location_id) {
   const form_query = fql`Shifts.where(.location_id == ${location_id}) {id, name, minimum}`;
+
+  const form_results = await client.query(form_query);
+
+  return form_results;
+}
+
+async function getAllProductsForLocation(location_id) {
+  const form_query = fql`Products.where(.location_id == ${location_id}) {id, name}`;
 
   const form_results = await client.query(form_query);
 
@@ -174,6 +178,14 @@ async function createShiftDoc(data) {
   return create_doc_result;
 }
 
+async function createProductDoc(data) {
+  const create_product_query = fql`Products.create(${data})`;
+
+  const create_product_results = await client.query(create_product_query);
+
+  return create_product_results;
+}
+
 const _getFQLCollection = (documentType) => {
   switch (documentType.toUpperCase()) {
     case "FORMS":
@@ -182,6 +194,10 @@ const _getFQLCollection = (documentType) => {
 
     case "SHIFTS":
       return fql`Shifts`;
+      break;
+
+    case "PRODUCTS":
+      return fql`Products`;
       break;
 
     default:
@@ -259,7 +275,9 @@ module.exports = {
   updateDocument,
   deleteDocument,
   createFormDoc,
-  getAllFormsForLocation,
   createShiftDoc,
+  createProductDoc,
+  getAllFormsForLocation,
   getAllShiftsForLocation,
+  getAllProductsForLocation,
 };

@@ -17,7 +17,7 @@ export default function page() {
   async function updateShiftList() {
     // pull all the shifts from Fauna DB and update state to match
     try {
-      const url = "/api/auth/get-shifts";
+      const url = process.env.NEXT_PUBLIC_URL + "api/auth/get-shifts";
 
       const results = await Fetcher.get(url);
 

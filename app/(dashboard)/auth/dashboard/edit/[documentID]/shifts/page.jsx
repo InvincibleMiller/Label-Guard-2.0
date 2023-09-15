@@ -78,7 +78,7 @@ function page({ params }) {
           form={updateForm}
           type="text"
           placeHolder="Some Shift"
-          options={{}}
+          options={{ required: "required" }}
         />
         <NumberInput
           id="minimum"

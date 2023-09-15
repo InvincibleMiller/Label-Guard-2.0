@@ -68,7 +68,7 @@ export default function page({ params }) {
           form={updateForm}
           type="text"
           placeHolder="Restaurant Form"
-          options={{}}
+          options={{ required: "required" }}
         />
         <TextAreaInput
           id="description"

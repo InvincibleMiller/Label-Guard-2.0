@@ -29,10 +29,15 @@ const verifySubscription = require("./backend/routes/auth/verifySubscription");
 const { getForms, registerForm } = require("./backend/routes/auth/forms");
 const { getShifts, registerShift } = require("./backend/routes/auth/shifts");
 const {
+  getInventory,
+  registerProduct,
+} = require("./backend/routes/auth/inventory");
+const {
   getDocument,
+  deleteDocument,
   updateFormDocument,
   updateShiftDocument,
-  deleteDocument,
+  updateProductDocument,
 } = require("./backend/routes/auth/document");
 
 // running the app, async operation
@@ -75,6 +80,10 @@ nextApp.prepare().then(() => {
   app.get("/api/auth/get-forms", getForms);
   // register a new form for the location
   app.post("/api/auth/register-form", registerForm);
+  // get inventory for location
+  app.get("/api/auth/get-inventory", getInventory);
+  // register a new product for the location
+  app.post("/api/auth/register-product", registerProduct);
   // get shifts for location
   app.get("/api/auth/get-shifts", getShifts);
   // register new shift for the location
@@ -85,6 +94,8 @@ nextApp.prepare().then(() => {
   app.post("/api/auth/update-form", updateFormDocument);
   // route to update shift documents owned by a location
   app.post("/api/auth/update-shift", updateShiftDocument);
+  // route to update product documents owned by a location
+  app.post("/api/auth/update-product", updateProductDocument);
   // route to delete documents owned by the location
   app.post("/api/auth/delete-document", deleteDocument);
 

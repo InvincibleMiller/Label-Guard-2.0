@@ -125,8 +125,6 @@ const registerForm = async (req, res, next) => {
       password: encryptedPassword,
     };
 
-    console.log(formSkeleton);
-
     // create the form document on Fauna DB
     const { data: createFormResult } = await createFormDoc(formSkeleton);
 

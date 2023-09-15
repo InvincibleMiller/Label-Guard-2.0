@@ -1,10 +1,10 @@
 const {
-  createShiftDoc,
-  getAllShiftsForLocation,
   locationBelongsToUser,
+  getAllProductsForLocation,
+  createProductDoc,
 } = require("../../fauna/queries");
 
-const getShifts = async (req, res, next) => {
+const getInventory = async (req, res, next) => {
   try {
     const locationID = req.cookies[process.env.LOCATION_ID_COOKIE];
     const { id: userID } = req.userDocument;
@@ -26,7 +26,7 @@ const getShifts = async (req, res, next) => {
       throw new Error("Location must belong to user");
     }
 
-    const { data: result } = await getAllShiftsForLocation(locationID);
+    const { data: result } = await getAllProductsForLocation(locationID);
 
     res.status(200).json(result);
   } catch (error) {
@@ -35,14 +35,20 @@ const getShifts = async (req, res, next) => {
   }
 };
 
-const registerShift = async (req, res, next) => {
+const registerProduct = async (req, res, next) => {
   try {
-    const { "shift-name": name, "shift-minimum": minimum } = req.body;
+    console.log("Starting");
+
+    // perform user input validation
+    const { "product-name": name } = req.body;
+
     const locationID = req.cookies[process.env.LOCATION_ID_COOKIE];
     const { id: userID } = req.userDocument;
 
     if (!name) {
-      res.status(422).json({ status: 422, message: "Shift name is required!" });
+      res
+        .status(422)
+        .json({ status: 422, message: "Product name is required!" });
       return;
     }
 
@@ -55,7 +61,11 @@ const registerShift = async (req, res, next) => {
       return;
     }
 
-    // The user must own the location of the form their trying to create
+    if (!userID) {
+      throw new Error("Request must include user id");
+    }
+
+    // The user must own the location of the product their trying to create
     const { data: userOwnsLocation } = await locationBelongsToUser(
       userID,
       locationID
@@ -73,20 +83,22 @@ const registerShift = async (req, res, next) => {
     // # After user validation
     //
 
-    const shiftSkeleton = {
+    // this is the data object passed to Fauna DB
+    const productSkeleton = {
       location_id: locationID,
       name: name,
-      minimum: parseInt(minimum),
     };
 
-    // create the shift document on Fauna DB
-    const { data: createShiftResult } = await createShiftDoc(shiftSkeleton);
+    // create the form document on Fauna DB
+    const { data: createProductResult } = await createProductDoc(
+      productSkeleton
+    );
 
-    res.status(200).json(createShiftResult);
+    res.status(200).json(createProductResult);
   } catch (error) {
     console.error(error);
     next(error);
   }
 };
 
-module.exports = { getShifts, registerShift };
+module.exports = { getInventory, registerProduct };
