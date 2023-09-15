@@ -89,7 +89,6 @@ export function NumberInput({
   options = {},
 }) {
   const ref = useRef();
-  const pattern = /^[1-9][0-9]*$/;
   const leadingZeros = /^0+/;
   const onlyNumeric = /[^0-9]+/g;
   const errors = form.formState.errors;
@@ -109,7 +108,7 @@ export function NumberInput({
         rules={{
           ...options,
           pattern: {
-            value: pattern,
+            value: /[0-9]+/,
             message: "Only decimal numbers are allowed.",
           },
         }}
@@ -126,9 +125,13 @@ export function NumberInput({
                 {...options}
                 placeholder={placeHolder}
                 onChange={(e) => {
-                  const numericValue = e.target.value.replace(leadingZeros, "");
-                  const finalValue = numericValue.replace(onlyNumeric, "");
-                  field.onChange(finalValue);
+                  let numericValue = e.target.value.replace(onlyNumeric, "");
+
+                  if (numericValue.length > 1) {
+                    numericValue = numericValue.replace(leadingZeros, "");
+                  }
+
+                  field.onChange(numericValue);
                 }}
                 className="form-control"
               />

@@ -162,6 +162,14 @@ async function getAllProductsForLocation(location_id) {
   return form_results;
 }
 
+async function getAllViolationsForLocation(location_id) {
+  const form_query = fql`Violations.where(.location_id == ${location_id}) {id, name, weight, repeat_weight}`;
+
+  const form_results = await client.query(form_query);
+
+  return form_results;
+}
+
 async function createFormDoc(data) {
   const create_doc_query = fql`Forms.create(${data})`;
 
@@ -186,19 +194,27 @@ async function createProductDoc(data) {
   return create_product_results;
 }
 
+async function createViolationDoc(data) {
+  const create_violation_query = fql`Violations.create(${data})`;
+
+  const create_violation_results = await client.query(create_violation_query);
+
+  return create_violation_results;
+}
+
 const _getFQLCollection = (documentType) => {
   switch (documentType.toUpperCase()) {
     case "FORMS":
       return fql`Forms`;
-      break;
 
     case "SHIFTS":
       return fql`Shifts`;
-      break;
 
     case "PRODUCTS":
       return fql`Products`;
-      break;
+
+    case "VIOLATIONS":
+      return fql`Violations`;
 
     default:
       return null;
@@ -277,7 +293,9 @@ module.exports = {
   createFormDoc,
   createShiftDoc,
   createProductDoc,
+  createViolationDoc,
   getAllFormsForLocation,
   getAllShiftsForLocation,
   getAllProductsForLocation,
+  getAllViolationsForLocation,
 };

@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 
-import { TextInput, NumberInput, SubmitButton } from "@/components/FormFields";
+import { TextInput, SubmitButton } from "@/components/FormFields";
 
 import { Fetcher } from "@/util/fetchHelpers";
 
@@ -19,7 +19,7 @@ export default function page({ params }) {
   async function updateProductDocument(payload) {
     try {
       const url = process.env.NEXT_PUBLIC_URL + "api/auth/update-product";
-      Fetcher.post(url, {
+      const res = await Fetcher.post(url, {
         id: documentID,
         type: "products",
         ...payload,

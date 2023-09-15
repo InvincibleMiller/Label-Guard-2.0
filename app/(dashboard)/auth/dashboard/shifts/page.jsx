@@ -34,7 +34,7 @@ export default function page() {
     // send payload to backend to add the product to Fauna DB
     // update the product list on success
     try {
-      const url = "/api/auth/register-shift";
+      const url = process.env.NEXT_PUBLIC_URL + "api/auth/register-shift";
       const results = await Fetcher.post(url, payload);
       updateShiftList();
     } catch (error) {
@@ -82,7 +82,7 @@ export default function page() {
             return (
               <tr key={shift.id}>
                 <td>{shift.name || "NULL"}</td>
-                <td>{shift.minimum || "NULL"}</td>
+                <td>{shift.minimum == undefined ? "NULL" : shift.minimum}</td>
                 <td>
                   <EditButton
                     url={`${process.env.NEXT_PUBLIC_URL}/auth/dashboard/edit/${shift.id}/shifts`}

@@ -1,10 +1,10 @@
 const {
-  createShiftDoc,
-  getAllShiftsForLocation,
+  getAllViolationsForLocation,
   locationBelongsToUser,
+  createViolationDoc,
 } = require("../../fauna/queries");
 
-const getShifts = async (req, res, next) => {
+const getViolations = async (req, res, next) => {
   try {
     const locationID = req.cookies[process.env.LOCATION_ID_COOKIE];
     const { id: userID } = req.userDocument;
@@ -26,7 +26,7 @@ const getShifts = async (req, res, next) => {
       throw new Error("Location must belong to user");
     }
 
-    const { data: result } = await getAllShiftsForLocation(locationID);
+    const { data: result } = await getAllViolationsForLocation(locationID);
 
     res.status(200).json(result);
   } catch (error) {
@@ -35,21 +35,34 @@ const getShifts = async (req, res, next) => {
   }
 };
 
-const registerShift = async (req, res, next) => {
+const registerViolation = async (req, res, next) => {
   try {
-    const { "shift-name": name, "shift-minimum": minimum } = req.body;
+    const {
+      "violation-name": name,
+      "violation-weight": weight,
+      "violation-repeat-weight": repeatWeight,
+    } = req.body;
     const locationID = req.cookies[process.env.LOCATION_ID_COOKIE];
     const { id: userID } = req.userDocument;
 
     if (!name) {
-      res.status(422).json({ status: 422, message: "Shift name is required!" });
+      res
+        .status(422)
+        .json({ status: 422, message: "Violation name is required!" });
       return;
     }
 
-    if (!minimum) {
+    if (!weight) {
       res
         .status(422)
-        .json({ status: 422, message: "Shift minimum is required!" });
+        .json({ status: 422, message: "Violation weight is required!" });
+      return;
+    }
+
+    if (!repeatWeight) {
+      res
+        .status(422)
+        .json({ status: 422, message: "Violation repeat weight is required!" });
       return;
     }
 
@@ -80,20 +93,23 @@ const registerShift = async (req, res, next) => {
     // # After user validation
     //
 
-    const shiftSkeleton = {
+    const violationSkeleton = {
       location_id: locationID,
       name: name,
-      minimum: parseInt(minimum),
+      weight: parseInt(weight),
+      repeat_weight: parseInt(repeatWeight),
     };
 
     // create the shift document on Fauna DB
-    const { data: createShiftResult } = await createShiftDoc(shiftSkeleton);
+    const { data: createViolationResult } = await createViolationDoc(
+      violationSkeleton
+    );
 
-    res.status(200).json(createShiftResult);
+    res.status(200).json(createViolationResult);
   } catch (error) {
     console.error(error);
     next(error);
   }
 };
 
-module.exports = { getShifts, registerShift };
+module.exports = { getViolations, registerViolation };

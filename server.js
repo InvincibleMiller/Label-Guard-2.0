@@ -33,11 +33,16 @@ const {
   registerProduct,
 } = require("./backend/routes/auth/inventory");
 const {
+  getViolations,
+  registerViolation,
+} = require("./backend/routes/auth/violations");
+const {
   getDocument,
   deleteDocument,
   updateFormDocument,
   updateShiftDocument,
   updateProductDocument,
+  updateViolationDocument,
 } = require("./backend/routes/auth/document");
 
 // running the app, async operation
@@ -76,28 +81,34 @@ nextApp.prepare().then(() => {
   app.post("/api/auth/checkout", checkout.post);
   // verify customer subscription
   app.get("/api/auth/verify-subscription", verifySubscription.get);
-  // get forms for location
-  app.get("/api/auth/get-forms", getForms);
   // register a new form for the location
   app.post("/api/auth/register-form", registerForm);
-  // get inventory for location
-  app.get("/api/auth/get-inventory", getInventory);
-  // register a new product for the location
-  app.post("/api/auth/register-product", registerProduct);
-  // get shifts for location
-  app.get("/api/auth/get-shifts", getShifts);
   // register new shift for the location
   app.post("/api/auth/register-shift", registerShift);
+  // register a new product for the location
+  app.post("/api/auth/register-product", registerProduct);
+  // register a new violation for the location
+  app.post("/api/auth/register-violation", registerViolation);
+  // get forms for location
+  app.get("/api/auth/get-forms", getForms);
+  // get shifts for location
+  app.get("/api/auth/get-shifts", getShifts);
+  // get inventory for location
+  app.get("/api/auth/get-inventory", getInventory);
+  // get inventory for violation
+  app.get("/api/auth/get-violations", getViolations);
   // get document route
   app.get("/api/auth/edit/:documentID/:documentCollection", getDocument);
+  // route to delete documents owned by the location
+  app.post("/api/auth/delete-document", deleteDocument);
   // route to update form documents owned by a location
   app.post("/api/auth/update-form", updateFormDocument);
   // route to update shift documents owned by a location
   app.post("/api/auth/update-shift", updateShiftDocument);
   // route to update product documents owned by a location
   app.post("/api/auth/update-product", updateProductDocument);
-  // route to delete documents owned by the location
-  app.post("/api/auth/delete-document", deleteDocument);
+  // route to update violation documents owned by a location
+  app.post("/api/auth/update-violation", updateViolationDocument);
 
   // redirecting all requests to Next.js
   app.use("/auth/", checkLogin("/login"));

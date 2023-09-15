@@ -196,6 +196,65 @@ const updateProductDocument = async (req, res, next) => {
   }
 };
 
+const updateViolationDocument = async (req, res, next) => {
+  try {
+    const { id: userID } = req.userDocument;
+    const locationID = req.cookies[process.env.LOCATION_ID_COOKIE];
+    const {
+      id: documentID,
+      type: documentType,
+      name,
+      weight,
+      repeat_weight,
+    } = req.body;
+
+    if (
+      name == undefined ||
+      weight == undefined ||
+      repeat_weight == undefined ||
+      documentID == undefined ||
+      documentType == undefined
+    ) {
+      throw new Error("Undefined input");
+    }
+
+    // Validate that the user owns the location for which they are querying data
+    const { data: userOwnsLocation } = await locationBelongsToUser(
+      userID,
+      locationID
+    );
+
+    if (!userOwnsLocation) {
+      throw new Error("Location must belong to user");
+    }
+
+    //
+    // # After user input validation
+    //
+
+    // update the document
+    const { data: update_result } = await updateDocumentInCollection(
+      locationID,
+      documentID,
+      documentType,
+      {
+        name,
+        weight: parseInt(weight),
+        repeat_weight: parseInt(repeat_weight),
+      }
+    );
+
+    if (update_result) {
+      res.status(200).json(update_result);
+    } else {
+      throw new Error("Document ownership inconsistency");
+    }
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
 const deleteDocument = async (req, res, next) => {
   try {
     const { id: userID } = req.userDocument;
@@ -238,4 +297,5 @@ module.exports = {
   updateFormDocument,
   updateShiftDocument,
   updateProductDocument,
+  updateViolationDocument,
 };
