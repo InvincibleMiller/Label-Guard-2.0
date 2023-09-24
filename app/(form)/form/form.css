@@ -1,0 +1,8 @@
+.screen-container {
+  height: 100vh;
+}
+
+.screen-container > .row:only-child {
+  box-sizing: border-box;
+  height: 100%;
+}

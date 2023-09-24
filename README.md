@@ -21,6 +21,7 @@ This specific tech stack is absolutely incredible because it allows the benefits
 Various other libraries are used in the app:
 
 - Stripe
+- Zustand (State Management)
 - react-hook-form
 - cryptojs
 - etc.

@@ -1,6 +1,7 @@
 // const { Client, fql } = require("fauna");
 const fauna = require("fauna");
 const { Client, fql } = fauna;
+const { decrypt } = require("../../util/crypto");
 
 // configure your client
 const client = new Client({
@@ -277,7 +278,30 @@ async function deleteDocument(location_id, document_id, documentType) {
   return delete_results;
 }
 
+async function loginToForm(form_id, password) {
+  const query_form = fql`Forms.byId(${form_id})`;
+
+  const { data: form } = await client.query(query_form);
+
+  const { password: hashed_form_password, location_id } = form;
+
+  if (decrypt(hashed_form_password) != password) {
+    return "Couldn't Log In";
+  }
+
+  const query_location = fql`Locations.byId(${location_id})`;
+
+  const { data: location_results } = await client.query(query_location);
+
+  if (!location_results) {
+    return "Location doesn't exist!";
+  }
+
+  return { form, location: location_results };
+}
+
 module.exports = {
+  // authentication
   registerAdmin,
   loginAdmin,
   logout,
@@ -287,6 +311,7 @@ module.exports = {
   userHasNoLocations,
   getDefaultLocation,
   locationBelongsToUser,
+  // dashboard CRUD
   getDocument,
   updateDocument,
   deleteDocument,
@@ -298,4 +323,6 @@ module.exports = {
   getAllShiftsForLocation,
   getAllProductsForLocation,
   getAllViolationsForLocation,
+  // forms
+  loginToForm,
 };

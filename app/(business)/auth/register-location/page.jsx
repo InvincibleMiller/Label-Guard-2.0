@@ -43,6 +43,7 @@ export default function page() {
               id="description"
               title="Description"
               form={form}
+              rows={3}
               options={{ required: "required", maxLength: 80 }}
             />
             <div className="text-center">

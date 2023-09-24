@@ -26,6 +26,8 @@ const registerLocation = require("./backend/routes/auth/registerLocation");
 const checkout = require("./backend/routes/auth/checkout");
 const verifySubscription = require("./backend/routes/auth/verifySubscription");
 
+const { loginToForm } = require("./backend/routes/form/loginForm");
+
 const { getForms, registerForm } = require("./backend/routes/auth/forms");
 const { getShifts, registerShift } = require("./backend/routes/auth/shifts");
 const {
@@ -67,6 +69,9 @@ nextApp.prepare().then(() => {
 
   // login existing user
   app.post("/api/login", login.post);
+
+  // login to a form
+  app.post("/api/form/login", loginToForm);
 
   //
   // # API Routes that requires users to be logged
