@@ -242,7 +242,7 @@ export function SelectInput({ id, title, form, options = {}, children }) {
   return (
     <div className="form-floating mb-3" ref={ref}>
       <Controller
-        name="selectedOption"
+        name={id}
         control={form.control}
         rules={{
           ...options,

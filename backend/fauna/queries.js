@@ -283,8 +283,14 @@ async function loginToForm(form_id, password) {
 
   const { data: form } = await client.query(query_form);
 
+  // extract the hashed password and location id from the form
   const { password: hashed_form_password, location_id } = form;
 
+  // removed the hashed password from the form object to prevent it
+  // from being sent to the client.
+  delete form.password;
+
+  // check if the decrypted password matches the user input
   if (decrypt(hashed_form_password) != password) {
     return "Couldn't Log In";
   }

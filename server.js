@@ -29,6 +29,7 @@ const verifySubscription = require("./backend/routes/auth/verifySubscription");
 const { loginToForm } = require("./backend/routes/form/loginForm");
 
 const { getForms, registerForm } = require("./backend/routes/auth/forms");
+const { getLocationData } = require("./backend/routes/form/getLocationData");
 const { getShifts, registerShift } = require("./backend/routes/auth/shifts");
 const {
   getInventory,
@@ -70,8 +71,15 @@ nextApp.prepare().then(() => {
   // login existing user
   app.post("/api/login", login.post);
 
+  //
+  // # Form API Routes
+  //
+
   // login to a form
   app.post("/api/form/login", loginToForm);
+
+  // get the location data for use in the form
+  app.get("/api/form/get-location-data", getLocationData);
 
   //
   // # API Routes that requires users to be logged

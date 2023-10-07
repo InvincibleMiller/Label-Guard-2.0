@@ -6,3 +6,8 @@
   box-sizing: border-box;
   height: 100%;
 }
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+}

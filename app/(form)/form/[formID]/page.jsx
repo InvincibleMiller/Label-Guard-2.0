@@ -1,12 +1,12 @@
 "use client";
 
+import { Fetcher } from "@/util/fetchHelpers";
+
 // import form state
 import useFormStore from "@/app/{stores}/formStore";
 
-import { useForm } from "react-hook-form";
 import { TextInput, SubmitButton } from "@/components/FormFields";
-
-import { Fetcher } from "@/util/fetchHelpers";
+import { useForm } from "react-hook-form";
 
 import { useRouter } from "next/navigation";
 
@@ -47,20 +47,31 @@ export default function page({ params }) {
     formStore.setLocation(location);
     formStore.setForm(form);
 
+    // TODO - Load shifts, inventory, and violations from Fauna into formStore.
+
+    const dataURL = process.env.NEXT_PUBLIC_URL + "api/form/get-location-data";
+    const dataRes = await Fetcher.get(`${dataURL}?locationID=${location.id}`);
+
+    const { inventory, shifts, violations } = await dataRes.json();
+
+    formStore.setInventory(inventory);
+    formStore.setShifts(shifts);
+    formStore.setViolations(violations);
+
     router.push(`${process.env.NEXT_PUBLIC_URL}form/${formID}/meta/`);
+
+    resetForm();
   }
 
   return (
-    <div className="container-fluid screen-container py-5">
+    <div className="container-fluid screen-container">
       {/* <h3>FORM — {formID}</h3> */}
       <div className="row align-items-center">
         <div className="col-12">
           <div className="card">
-            <form
-              className="card-body text-center"
-              onSubmit={handleSubmit(loginToForm)}
-            >
-              <h4 className="mb-4 text-center">Sign In</h4>
+            <form className="card-body" onSubmit={handleSubmit(loginToForm)}>
+              <h3 className="mb-4">Label Guard</h3>
+              <h4 className="mb-4">Sign In</h4>
               <TextInput
                 form={loginForm}
                 id={"form-password"}
@@ -68,7 +79,9 @@ export default function page({ params }) {
                 type="password"
                 options={{ required: "required" }}
               />
-              <SubmitButton text={"Sign In"} />
+              <div className="d-grid">
+                <SubmitButton text={"Sign In"} />
+              </div>
             </form>
           </div>
         </div>
