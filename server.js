@@ -2,32 +2,19 @@ require("dotenv-flow").config();
 const express = require("express");
 const next = require("next");
 
-// express parsers
-const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
-
-const port = process.env.PORT || 3000;
-const dev = process.env.NODE_ENV !== "production";
-
-// creating the app either in production or dev mode
-const nextApp = next({ dev });
-const handle = nextApp.getRequestHandler();
-
 // express middleware functions
 const { checkLogin } = require("./backend/middleware/checkLogin");
 
 // express api functions
 const register = require("./backend/routes/register");
 const login = require("./backend/routes/login");
+const { loginToForm } = require("./backend/routes/form/loginForm");
 
 // "auth" api functions
 const logout = require("./backend/routes/auth/logout");
 const registerLocation = require("./backend/routes/auth/registerLocation");
 const checkout = require("./backend/routes/auth/checkout");
 const verifySubscription = require("./backend/routes/auth/verifySubscription");
-
-const { loginToForm } = require("./backend/routes/form/loginForm");
-
 const { getForms, registerForm } = require("./backend/routes/auth/forms");
 const { getLocationData } = require("./backend/routes/form/getLocationData");
 const { getShifts, registerShift } = require("./backend/routes/auth/shifts");
@@ -47,6 +34,23 @@ const {
   updateProductDocument,
   updateViolationDocument,
 } = require("./backend/routes/auth/document");
+
+const submitFindingReport = require("./backend/routes/form/submitFindingReport");
+
+// express parsers
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+
+//
+// # Setup the server
+//
+
+const port = process.env.PORT || 3000;
+const dev = process.env.NODE_ENV !== "production";
+
+// creating the app either in production or dev mode
+const nextApp = next({ dev });
+const handle = nextApp.getRequestHandler();
 
 // running the app, async operation
 nextApp.prepare().then(() => {
@@ -80,6 +84,9 @@ nextApp.prepare().then(() => {
 
   // get the location data for use in the form
   app.get("/api/form/get-location-data", getLocationData);
+
+  // submit a finding report
+  app.post("/api/form/submit-finding-report", submitFindingReport);
 
   //
   // # API Routes that requires users to be logged

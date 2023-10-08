@@ -11,6 +11,8 @@ import Link from "next/link";
 
 import moment from "moment";
 
+import { Fetcher } from "@/util/fetchHelpers";
+
 function page() {
   const formDocument = useStore(useFormStore, (state) => state.form);
   const locationDocument = useStore(useFormStore, (state) => state.location);
@@ -19,14 +21,33 @@ function page() {
     useFormStore,
     (state) => state.submissionFullName
   );
-  const submissionDate = useStore(
-    useFormStore,
-    (state) => state.submissionDate
+  const submissionDate = useStore(useFormStore, (state) =>
+    moment(state.submissionDate)
   );
   const submissionShift = useStore(
     useFormStore,
     (state) => state.submissionShift
   );
+
+  const submissionFindings = useStore(
+    useFormStore,
+    (state) => state.submissionFindings
+  );
+
+  async function submitReport() {
+    const payload = {
+      fullName: submissionFullName,
+      shift: submissionShift,
+      date: submissionDate,
+      findings: submissionFindings,
+    };
+
+    const url = process.env.NEXT_PUBLIC_URL + "api/form/submit-finding-report";
+
+    const res = await Fetcher.post(url, payload);
+
+    console.log(await res.json());
+  }
 
   return (
     <div className="container-fluid">
@@ -36,9 +57,9 @@ function page() {
             <p className="lead mb-0">{formDocument?.name || "NULL"}</p>
             <h2>Review Finding Report</h2>
             <div className="d-grid">
-              <Link href={"#"} className="btn btn-primary">
+              <button onClick={submitReport} className="btn btn-primary">
                 Submit
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -54,7 +75,7 @@ function page() {
             </Card>
             <Card title={"Date"}>
               <p className="card-text mb-0">
-                {moment(submissionDate).format("MMMM Do YYYY") || "DATE"}
+                {submissionDate?.format("MMMM Do YYYY") || "DATE"}
               </p>
             </Card>
             <Card title={"Shift"}>
@@ -67,7 +88,12 @@ function page() {
       </div>
       <div className="row mb-4">
         <div className="col">
-          <h2>Findings</h2>
+          <div className="d-flex justify-content-between mb-2">
+            <h2 className="mb-0">Findings</h2>
+            <Link href="findings" replace className="btn btn-secondary">
+              Edit
+            </Link>
+          </div>
           {getFindingListComponent()}
         </div>
       </div>

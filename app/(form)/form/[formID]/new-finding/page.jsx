@@ -15,6 +15,8 @@ import {
 
 import { useRouter } from "next/navigation";
 
+import Link from "next/link";
+
 function page() {
   const router = useRouter();
 
@@ -24,6 +26,10 @@ function page() {
     reset: resetForm,
     setError: setFormError,
   } = findingForm;
+
+  // form state:
+
+  const formDocument = useStore(useFormStore, (state) => state.form);
 
   const locationViolations = useStore(
     useFormStore,
@@ -66,9 +72,17 @@ function page() {
 
   return (
     <div className="container-fluid">
-      <div className="row bg-primary text-light mb-4">
-        <div className="col-12 my-2">
-          <h2>New Finding</h2>
+      <div className="row sticky-header bg-white mb-4 shadow-sm py-4">
+        <div className="container">
+          <div className="row">
+            <p className="lead mb-0">{formDocument?.name || "NULL"}</p>
+            <div className="d-flex justify-content-between">
+              <h2>New Finding</h2>
+              <Link href="findings" replace className="btn btn-secondary">
+                Back
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
       <div className="row">
