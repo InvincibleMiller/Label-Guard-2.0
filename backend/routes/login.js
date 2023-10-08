@@ -11,8 +11,6 @@ const login = {
       // Log the user in and store the session token
       const { email, password } = req.body;
 
-      console.log(email, password);
-
       // confirm that the email is valid
       // RFC5322
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;

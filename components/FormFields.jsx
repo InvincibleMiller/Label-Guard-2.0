@@ -229,7 +229,14 @@ export function DateInput({ id, title, form, options = {} }) {
   );
 }
 
-export function SelectInput({ id, title, form, options = {}, children }) {
+export function SelectInput({
+  id,
+  title,
+  form,
+  options = {},
+  defaultValue = 0,
+  children,
+}) {
   const ref = useRef();
   const errors = form.formState.errors;
 
@@ -249,7 +256,12 @@ export function SelectInput({ id, title, form, options = {}, children }) {
         }}
         render={({ field }) => (
           <>
-            <select id={id} className="form-select" {...field}>
+            <select
+              id={id}
+              defaultValue={defaultValue}
+              className="form-select form-control"
+              {...field}
+            >
               {children}
             </select>
             <label htmlFor={id} className="form-label">

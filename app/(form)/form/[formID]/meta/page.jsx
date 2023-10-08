@@ -21,7 +21,7 @@ function page({ params }) {
   const { formID } = params;
 
   const metaForm = useForm();
-  const { handleSubmit, reset: resetForm } = metaForm;
+  const { handleSubmit, reset: resetForm, setError: setFormError } = metaForm;
 
   const locationDocument = useStore(useFormStore, (state) => state.location);
   const formDocument = useStore(useFormStore, (state) => state.form);
@@ -43,6 +43,13 @@ function page({ params }) {
       "submission-date": submissionDate,
     } = payload;
 
+    console.log(payload);
+
+    if (shift == 0) {
+      setFormError("shift", { message: "required" }, { shouldFocus: true });
+      return;
+    }
+
     setSubDate(submissionDate);
     setSubFullName(fullName);
     setSubShift(JSON.parse(shift));
@@ -53,13 +60,11 @@ function page({ params }) {
 
   return (
     <div className="container-fluid">
-      <div className="row ">
-        <nav className="bg-primary text-white mb-4 navbar navbar-expand-lg">
-          <div>
-            <div className="container-fluid">
-              <h2>{locationDocument?.name || "Label Guard"}</h2>
-              <h6>{formDocument?.name || "Form Name"}</h6>
-            </div>
+      <div className="row sticky-header bg-white mb-4 shadow-sm py-4">
+        <nav className="container">
+          <div className="row">
+            <p className="lead mb-0">{formDocument?.name || "Form Name"}</p>
+            <h2>{locationDocument?.name || "Label Guard"}</h2>
           </div>
         </nav>
       </div>
@@ -87,7 +92,9 @@ function page({ params }) {
             >
               {shifts?.length > 0 ? (
                 <>
-                  <option value={null}>Select Shift</option>
+                  <option disabled value={0}>
+                    Select Shift
+                  </option>
                   {shifts?.map((shift, i) => {
                     return (
                       <option key={i} value={JSON.stringify(shift)}>
