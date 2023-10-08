@@ -68,7 +68,7 @@ export function getFindingListComponent() {
                   {finding?.corrective || "Corrective"}
                 </p>
               </div>
-              <div className="col-2 d-grid">
+              <div className="col-2 d-grid justify-content-end">
                 <div className="mx-auto dropdown">
                   <button
                     className="btn btn-outline-primary dropdown-toggle"
