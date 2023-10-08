@@ -18,6 +18,16 @@ const useFormStore = create(
         set(() => ({
           submissionFindings: findings,
         })),
+      deleteSubFinding: (index) =>
+        set(() => ({
+          submissionFindings: get().submissionFindings.toSpliced(index, 1),
+        })),
+      editSubFinding: (index, finding) => {
+        const findings = get().submissionFindings;
+        findings.splice(index, 1, finding);
+
+        return set(() => ({ submissionFindings: findings }));
+      },
       addSubFinding: (finding) =>
         set(() => ({
           submissionFindings: [...get().submissionFindings, finding],

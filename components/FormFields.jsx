@@ -55,6 +55,7 @@ export function TextAreaInput({
   title,
   form,
   placeHolder = "",
+  defaultValue = "",
   options = {},
   rows = 2,
 }) {
@@ -67,7 +68,7 @@ export function TextAreaInput({
     ref.current?.classList.remove(errorClass);
   }
 
-  const [characterCount, setCharacterCount] = useState(0);
+  const [characterCount, setCharacterCount] = useState(defaultValue.length);
 
   const handleTextChange = (e, field) => {
     let text = e.target.value;
@@ -86,7 +87,7 @@ export function TextAreaInput({
       <Controller
         name={id}
         control={form.control}
-        defaultValue=""
+        defaultValue={defaultValue}
         rules={{
           ...options,
         }}
@@ -96,11 +97,12 @@ export function TextAreaInput({
               id={id}
               className="form-control"
               autoComplete="off"
-              placeholder={placeHolder}
               style={{ height: `${rows * 36}px` }}
               {...field}
               onChange={(e) => handleTextChange(e, field)}
-            />
+            >
+              {defaultValue}
+            </textarea>
             <label htmlFor={id} className="form-label">
               {title}
               {errors[id] && <> — {errors[id]?.message}</>}

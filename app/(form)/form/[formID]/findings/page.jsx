@@ -46,6 +46,8 @@ export function getFindingListComponent() {
     (state) => state.submissionFindings
   );
 
+  const deleteSubFinding = useFormStore((state) => state.deleteSubFinding);
+
   return (
     <ul className="finding-list list-group gap-3">
       {submissionFindings
@@ -67,7 +69,7 @@ export function getFindingListComponent() {
                 </p>
               </div>
               <div className="col-2 d-grid">
-                <div className="m-auto dropdown">
+                <div className="mx-auto dropdown">
                   <button
                     className="btn btn-outline-primary dropdown-toggle"
                     type="button"
@@ -76,10 +78,21 @@ export function getFindingListComponent() {
                   ></button>
                   <ul className="dropdown-menu">
                     <li>
-                      <button className="dropdown-item">Edit</button>
+                      <Link
+                        replace
+                        href={`edit/${i}`}
+                        className="dropdown-item"
+                      >
+                        Edit
+                      </Link>
                     </li>
                     <li>
-                      <button className="dropdown-item">Delete</button>
+                      <button
+                        className="dropdown-item"
+                        onClick={() => deleteSubFinding(i)}
+                      >
+                        Delete
+                      </button>
                     </li>
                   </ul>
                 </div>

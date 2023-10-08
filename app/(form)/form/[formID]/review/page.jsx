@@ -21,8 +21,9 @@ function page() {
     useFormStore,
     (state) => state.submissionFullName
   );
-  const submissionDate = useStore(useFormStore, (state) =>
-    moment(state.submissionDate)
+  const submissionDate = useStore(
+    useFormStore,
+    (state) => state.submissionDate
   );
   const submissionShift = useStore(
     useFormStore,
@@ -75,7 +76,7 @@ function page() {
             </Card>
             <Card title={"Date"}>
               <p className="card-text mb-0">
-                {submissionDate?.format("MMMM Do YYYY") || "DATE"}
+                {moment(submissionDate).format("MMMM Do YYYY") || "DATE"}
               </p>
             </Card>
             <Card title={"Shift"}>
