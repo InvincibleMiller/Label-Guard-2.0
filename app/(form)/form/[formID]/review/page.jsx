@@ -41,6 +41,8 @@ function page() {
       shift: submissionShift,
       date: submissionDate,
       findings: submissionFindings,
+      location: locationDocument,
+      form: formDocument,
     };
 
     const url = process.env.NEXT_PUBLIC_URL + "api/form/submit-finding-report";

@@ -306,6 +306,53 @@ async function loginToForm(form_id, password) {
   return { form, location: location_results };
 }
 
+async function getLocationSettings(location_id) {
+  const query = fql`LocationSettings.byLocationId(${location_id}).first()`;
+
+  const { data: settings } = await client.query(query);
+
+  return settings;
+}
+
+async function getLastViolationPair(
+  location_id,
+  violation_id,
+  product_id,
+  timeStamp
+) {
+  const query = fql`ViolationPairs.byViolationIdAndProductId(${violation_id}, ${product_id}).where(.found_on <= ${timeStamp}).order(desc(.found_on)).first()`;
+
+  const { data: violationPair } = await client.query(query);
+
+  return violationPair;
+}
+
+async function createViolationPair(
+  location_id,
+  violation_id,
+  product_id,
+  timeStamp
+) {
+  const query = fql`ViolationPairs.create({
+    location_id: ${location_id},
+    violation_id: ${violation_id},
+    product_id: ${product_id},
+    found_on: ${timeStamp},
+  })`;
+
+  const { data: violationPair } = await client.query(query);
+
+  return violationPair;
+}
+
+async function createFindingReportDocument(finding_report_skeleton) {
+  const query = fql`FindingReports.create(${finding_report_skeleton})`;
+
+  const { data: report } = await client.query(query);
+
+  return report;
+}
+
 module.exports = {
   // authentication
   registerAdmin,
@@ -331,4 +378,8 @@ module.exports = {
   getAllViolationsForLocation,
   // forms
   loginToForm,
+  getLocationSettings,
+  getLastViolationPair,
+  createViolationPair,
+  createFindingReportDocument,
 };

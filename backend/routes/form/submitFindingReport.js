@@ -1,79 +1,107 @@
 const moment = require("moment");
+const {
+  // getLocationSettings,
+  // getLastViolationPair,
+  createViolationPair,
+  createFindingReportDocument,
+} = require("../../fauna/queries");
 
 // post
-const submitFindingReport = (req, res, next) => {
+const submitFindingReport = async (req, res, next) => {
   try {
-    // get the payload from the client.
-    //
-    // # The payload is expected to match this specification:
-    //
-    // # const payload = {
-    // #   submissionFullName: String(),
-    // #   submissionShift: { id },
-    // #   submissionDate: moment(),
-    // #   submissionFindings: [{
-    // #     violation: {...},
-    // #     product: {...},
-    // #     corrective: String()
-    // #   }],
-    // # };
+    const { fullName, shift, date, findings, location, form } = req.body;
 
-    const { fullName, shift, date, findings } = req.body;
-    console.log(req.body);
+    // TODO - perform server side input validation
 
-    /**
-     * first step is: get the location's settings
-     *  ```fql
-     *    LocationSettings.byLocationId(${location_id}).first()
-     *  ```
-     *
-     * if the return == null, use generic settings
-     * (i.e maximum repeat threshold = 7 days)
-     *
-     * but regardless, the main thing we need from
-     * these settings is the maximum_repeat_threshold
-     *
-     * Now for every finding:
-     *
-     * add an entry in the repeat skeleton for the current finding:
-     * {
-     *   violation_name: "",
-     *   product_name: "",
-     *   weight: default_weight,
-     *   repeat: false,
-     * }
-     *
-     * check if an existing ViolationPair document corresponds to it:
-     *
-     * if not:
-     *  create the ViolationPair and set the lastOccurrence date to NOW.
-     *
-     * else:
-     *  if (NOW < lastOccurrence + maximum_repeat_threshold):
-     *    # we found a repeat!
-     *
-     *    # in the ReportSkeleton set the repeat status to TRUE
-     *    # and adjust the weight to the repeat weight.
-     *
-     *    # Repeat documents are useful for visualizing the lifetime
-     *    # of issues in a restaurant. (How often did recurring issues survive?)
-     *    if a Repeat document exists where \
-     *      (NOW < Repeat.lastOccurrence + maximum_repeat_threshold):
-     *
-     *      # extend the lastOccurrence date to NOW
-     *      Repeat.lastOccurrence = NOW
-     *
-     *    else:
-     *      create a repeat document {
-     *        violation_pair_id,
-     *        found_on: NOW,
-     *        last_occurrence: NOW,
-     *      }
-     */
+    // get the current time once so that it is constant
+    // throughout this report compilation
+    const NOW = moment(date).valueOf();
+    const date_NOW = new Date(NOW);
+
+    // create a violation pair for every single finding
+    const compiledFindingsPromise = findings.map(async (finding, index) => {
+      const newViolationPair = await createViolationPair(
+        location.id,
+        finding.violation.id,
+        finding.product.id,
+        date_NOW
+      );
+
+      // this returns a promise
+      return newViolationPair.id;
+    });
+
+    // resolve every promise before continuing
+    const compiledFindings = await Promise.all(compiledFindingsPromise);
+
+    const findingReportSkeleton = {
+      location_id: location.id,
+      form_id: form.id,
+      date: date_NOW,
+      full_name: fullName,
+      shift_id: shift.id,
+      findings: compiledFindings,
+    };
+
+    const findingReportResult = await createFindingReportDocument(
+      findingReportSkeleton
+    );
+
+    res.status(200).json(findingReportResult);
   } catch (error) {
     console.log(error);
     next(error);
   }
 };
+
+// ## Repeat Tracking Logic (old system)
+
+// //
+// // get the location settings
+// //
+// const locationSettings = (await getLocationSettings(location.id)) || {
+//   // Milliseconds in a week
+//   maximum_repeat_threshold: 7 * 24 * 60 * 60 * 1000,
+// };
+// // Destructure settings for easy access later
+// const { maximum_repeat_threshold } = locationSettings;
+
+// const violationPairs = {};
+
+// // for each finding
+
+// const findingEntry = {
+//   violation_name: finding.violation.name,
+//   product_name: finding.product.name,
+//   weight: finding.violation.weight,
+//   repeat: false,
+// };
+
+// // get the most recent corresponding ViolationPair
+// // if it exists relative to the current timestamp (NOW)
+
+// // store these in a cache
+// const vp_hash = finding.violation.id + finding.product.id + NOW;
+
+// if (violationPairs[vp_hash] === undefined) {
+//   violationPairs[vp_hash] = await getLastViolationPair(
+//     finding.violation.id,
+//     finding.product.id,
+//     date_NOW
+//   );
+// }
+
+// if (violationPairs[vp_hash]) {
+//   // The ViolationPair exists
+//   // Check if this finding is a repeat
+//   if (
+//     NOW <
+//     violationPairs[vp_hash].last_occurrence + maximum_repeat_threshold
+//   ) {
+//     // This finding is a repeat
+//     findingEntry.repeat = true;
+//     findingEntry.weight = finding.violation.repeat_weight;
+//   }
+// }
 
 module.exports = submitFindingReport;
