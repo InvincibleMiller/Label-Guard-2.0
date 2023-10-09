@@ -6,7 +6,7 @@ const {
   createFindingReportDocument,
 } = require("../../fauna/queries");
 
-// post
+// POST
 const submitFindingReport = async (req, res, next) => {
   try {
     const { fullName, shift, date, findings, location, form } = req.body;
@@ -34,6 +34,7 @@ const submitFindingReport = async (req, res, next) => {
     // resolve every promise before continuing
     const compiledFindings = await Promise.all(compiledFindingsPromise);
 
+    // organize all the data into the format stored in FaunaDB
     const findingReportSkeleton = {
       location_id: location.id,
       form_id: form.id,
@@ -43,6 +44,8 @@ const submitFindingReport = async (req, res, next) => {
       findings: compiledFindings,
     };
 
+    // create the new FindingReport document over in Fauna DB
+    // and return it to the client
     const findingReportResult = await createFindingReportDocument(
       findingReportSkeleton
     );
