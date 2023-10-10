@@ -15,6 +15,8 @@ import {
   SubmitButton,
 } from "@/components/FormFields";
 
+import FormLoadingScreen from "@/components/FormLoadingScreen";
+
 function page({ params }) {
   const router = useRouter();
 
@@ -54,8 +56,12 @@ function page({ params }) {
     setSubFullName(fullName);
     setSubShift(JSON.parse(shift));
 
-    router.push(`${process.env.NEXT_PUBLIC_URL}form/${formID}/findings`);
+    router.replace(`${process.env.NEXT_PUBLIC_URL}form/${formID}/findings`);
     resetForm();
+  }
+
+  if (!formDocument) {
+    return <FormLoadingScreen formID={formID} />;
   }
 
   return (

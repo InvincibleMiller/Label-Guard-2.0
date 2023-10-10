@@ -34,6 +34,10 @@ const {
   updateProductDocument,
   updateViolationDocument,
 } = require("./backend/routes/auth/document");
+const {
+  getFindingPage,
+  getNextPage,
+} = require("./backend/routes/auth/getFindingPage");
 
 const submitFindingReport = require("./backend/routes/form/submitFindingReport");
 
@@ -129,6 +133,11 @@ nextApp.prepare().then(() => {
   app.post("/api/auth/update-product", updateProductDocument);
   // route to update violation documents owned by a location
   app.post("/api/auth/update-violation", updateViolationDocument);
+
+  // route to get the finding reports as a page
+  app.get("/api/auth/get-finding-page", getFindingPage);
+  // route to get the next page of finding reports
+  app.get("/api/auth/get-next-page", getNextPage);
 
   // redirecting all requests to Next.js
   app.use("/auth/", checkLogin("/login"));

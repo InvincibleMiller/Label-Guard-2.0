@@ -9,9 +9,16 @@ import useStore from "@/app/{stores}/useStore";
 
 import { Card } from "@/components/Bootstrap";
 
-export default function page() {
+import FormLoadingScreen from "@/components/FormLoadingScreen";
+
+export default function page({ params }) {
+  const { formID } = params;
+
   const formDocument = useStore(useFormStore, (state) => state.form);
-  const locationDocument = useStore(useFormStore, (state) => state.location);
+
+  if (!formDocument) {
+    return <FormLoadingScreen formID={formID} />;
+  }
 
   return (
     <div className="container-fluid">
@@ -26,7 +33,7 @@ export default function page() {
               </Link>
             </div>
             <div className="d-grid">
-              <Link href={"review"} className="btn btn-primary">
+              <Link replace href={"review"} className="btn btn-primary">
                 <h3 className="my-0">Continue</h3>
               </Link>
             </div>
@@ -34,13 +41,15 @@ export default function page() {
         </div>
       </div>
       <div className="row mb-4">
-        <div className="col">{getFindingListComponent()}</div>
+        <div className="col">
+          <FindingListComponent />
+        </div>
       </div>
     </div>
   );
 }
 
-export function getFindingListComponent() {
+export function FindingListComponent() {
   const submissionFindings = useStore(
     useFormStore,
     (state) => state.submissionFindings

@@ -9,6 +9,7 @@ import { TextInput, SubmitButton } from "@/components/FormFields";
 import { useForm } from "react-hook-form";
 
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function page({ params }) {
   const router = useRouter();
@@ -18,6 +19,8 @@ export default function page({ params }) {
   const { formID } = params;
 
   const loginForm = useForm();
+
+  useEffect(() => formStore.clearState(), []);
 
   const { handleSubmit, reset: resetForm } = loginForm;
 
@@ -58,9 +61,7 @@ export default function page({ params }) {
     formStore.setShifts(shifts);
     formStore.setViolations(violations);
 
-    router.push(`${process.env.NEXT_PUBLIC_URL}form/${formID}/meta/`);
-
-    resetForm();
+    router.replace(`${process.env.NEXT_PUBLIC_URL}form/${formID}/meta/`);
   }
 
   return (

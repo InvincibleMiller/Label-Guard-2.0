@@ -16,8 +16,10 @@ import {
 import { useRouter } from "next/navigation";
 
 import Link from "next/link";
+import FormLoadingScreen from "@/components/FormLoadingScreen";
 
-function page() {
+function page({ params }) {
+  const { formID } = params;
   const router = useRouter();
 
   const findingForm = useForm();
@@ -68,6 +70,10 @@ function page() {
 
     // return to the finding list
     router.replace("findings");
+  }
+
+  if (!formDocument) {
+    return <FormLoadingScreen formID={formID} />;
   }
 
   return (

@@ -331,12 +331,14 @@ async function createViolationPair(
   location_id,
   violation_id,
   product_id,
+  corrective,
   timeStamp
 ) {
   const query = fql`ViolationPairs.create({
     location_id: ${location_id},
     violation_id: ${violation_id},
     product_id: ${product_id},
+    corrective: ${corrective},
     found_on: ${timeStamp},
   })`;
 
@@ -351,6 +353,22 @@ async function createFindingReportDocument(finding_report_skeleton) {
   const { data: report } = await client.query(query);
 
   return report;
+}
+
+async function getFindingReportsByLocation(location_id, limit) {
+  const query = fql`FindingReports.byLocationId(${location_id}).order(desc(.date)).paginate(${limit})`;
+
+  const { data: findingReportPage } = await client.query(query);
+
+  return findingReportPage;
+}
+
+async function getTheNextPage(pageSecret) {
+  const query = fql`Set.paginate(${pageSecret})`;
+
+  const { data: nextPage } = await client.query(query);
+
+  return nextPage;
 }
 
 module.exports = {
@@ -376,10 +394,12 @@ module.exports = {
   getAllShiftsForLocation,
   getAllProductsForLocation,
   getAllViolationsForLocation,
+  getFindingReportsByLocation,
   // forms
   loginToForm,
   getLocationSettings,
   getLastViolationPair,
   createViolationPair,
   createFindingReportDocument,
+  getTheNextPage,
 };

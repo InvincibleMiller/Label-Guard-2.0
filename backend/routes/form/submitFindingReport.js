@@ -24,6 +24,7 @@ const submitFindingReport = async (req, res, next) => {
         location.id,
         finding.violation.id,
         finding.product.id,
+        finding.corrective,
         date_NOW
       );
 

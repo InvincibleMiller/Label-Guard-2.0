@@ -1,10 +1,12 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 // import form state
 import useStore from "@/app/{stores}/useStore";
 import useFormStore from "@/app/{stores}/formStore";
 
-import { getFindingListComponent } from "../findings/page";
+import { FindingListComponent } from "../findings/page";
 
 import { Card } from "@/components/Bootstrap";
 import Link from "next/link";
@@ -13,7 +15,12 @@ import moment from "moment";
 
 import { Fetcher } from "@/util/fetchHelpers";
 
-function page() {
+import FormLoadingScreen from "@/components/FormLoadingScreen";
+
+function page({ params }) {
+  const { formID } = params;
+  const router = useRouter();
+
   const formDocument = useStore(useFormStore, (state) => state.form);
   const locationDocument = useStore(useFormStore, (state) => state.location);
 
@@ -35,6 +42,8 @@ function page() {
     (state) => state.submissionFindings
   );
 
+  const clearFormState = useFormStore((state) => state.clearState);
+
   async function submitReport() {
     const payload = {
       fullName: submissionFullName,
@@ -49,7 +58,18 @@ function page() {
 
     const res = await Fetcher.post(url, payload);
 
-    console.log(await res.json());
+    if (res.status === 200) {
+      clearFormState();
+
+      router.push(process.env.NEXT_PUBLIC_URL + "form/success");
+    } else {
+      // TODO - Some kind of error effect
+      router.push(process.env.NEXT_PUBLIC_URL + "form/error");
+    }
+  }
+
+  if (!formDocument) {
+    return <FormLoadingScreen formID={formID} />;
   }
 
   return (
@@ -97,7 +117,7 @@ function page() {
               Edit
             </Link>
           </div>
-          {getFindingListComponent()}
+          <FindingListComponent />
         </div>
       </div>
     </div>

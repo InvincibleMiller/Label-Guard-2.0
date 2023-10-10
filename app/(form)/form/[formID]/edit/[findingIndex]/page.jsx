@@ -13,10 +13,12 @@ import { useRouter } from "next/navigation";
 
 import Link from "next/link";
 
+import FormLoadingScreen from "@/components/FormLoadingScreen";
+
 function page({ params }) {
   const router = useRouter();
 
-  const { findingIndex } = params;
+  const { findingIndex, formID } = params;
 
   const findingForm = useForm();
   const { handleSubmit } = findingForm;
@@ -48,8 +50,8 @@ function page({ params }) {
     router.replace("../findings");
   }
 
-  if (!selectedFinding) {
-    return "Loading...";
+  if (!formDocument) {
+    return <FormLoadingScreen formID={formID} />;
   }
 
   return (

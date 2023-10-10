@@ -101,7 +101,6 @@ export default function page() {
         <thead>
           <tr>
             <th>Name</th>
-            <th>url</th>
             <th></th>
           </tr>
         </thead>
@@ -109,11 +108,16 @@ export default function page() {
           {locationForms?.map((form) => {
             return (
               <tr key={form.id}>
-                <td>{form.name || "NULL"}</td>
                 <td>
-                  {form.id
-                    ? `${process.env.NEXT_PUBLIC_URL}form/${form.id}`
-                    : "NULL"}
+                  <a
+                    className="btn btn-link"
+                    href={`${process.env.NEXT_PUBLIC_URL}form/${
+                      form?.id || "NULL"
+                    }`}
+                    target="_blank"
+                  >
+                    {form?.name || "NULL"}
+                  </a>
                 </td>
                 <td>
                   <EditButton
