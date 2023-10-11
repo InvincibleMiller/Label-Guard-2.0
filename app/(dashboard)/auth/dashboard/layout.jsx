@@ -76,7 +76,7 @@ export default async function RootLayout({ children, params }) {
         <div className="container-fluid shadow-sm mb-4">
           <div className="row">
             <div className="col bg-primary text-light">
-              <div className="container-xl px-0">
+              <div className="container-xl py-2 px-0">
                 <div className="row py-2">
                   <div className="col d-flex justify-content-between align-items-center">
                     <h4 className="fw-bold mb-0">Label Guard</h4>
