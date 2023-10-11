@@ -27,7 +27,7 @@ export default function page({ params }) {
           <div className="row">
             <p className="lead mb-0">{formDocument?.name || "NULL"}</p>
             <div className="col-12 d-flex justify-content-between">
-              <h2>Findings</h2>
+              <h2 className="mb-0">Findings</h2>
               <Link replace href="new-finding" className="btn btn-primary mb-2">
                 Add New
               </Link>

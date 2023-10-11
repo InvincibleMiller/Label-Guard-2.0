@@ -70,7 +70,7 @@ function page({ params }) {
         <nav className="container">
           <div className="row">
             <p className="lead mb-0">{formDocument?.name || "Form Name"}</p>
-            <h2>{locationDocument?.name || "Label Guard"}</h2>
+            <h2 className="mb-0">{locationDocument?.name || "Label Guard"}</h2>
           </div>
         </nav>
       </div>

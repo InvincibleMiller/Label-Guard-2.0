@@ -5,7 +5,9 @@ import "./dashboard.css";
 
 // component imports
 import Link from "next/link";
+import NavBarHighlighter from "@/components/NavBarHighlighter";
 import LogoutButton from "@/components/LogoutButton";
+import { NavLink } from "@/components/NavBar";
 
 // user validation imports
 import { cookies } from "next/headers";
@@ -71,31 +73,83 @@ export default async function RootLayout({ children, params }) {
   return (
     <html lang="en">
       <body>
-        {subscriptionActive && "USER SUBSCRIPTION VERIFIED"}
-        <h1>Label Guard</h1>
-        <h3>{locationDoc.name}</h3>
-        <LogoutButton />
-        <ul>
-          <li>
-            <Link href="/auth/dashboard/">Dashboard</Link>
-          </li>
-          <li>
-            <Link href="/auth/dashboard/reports/">Reports</Link>
-          </li>
-          <li>
-            <Link href="/auth/dashboard/violations/">Violations</Link>
-          </li>
-          <li>
-            <Link href="/auth/dashboard/inventory/">Inventory</Link>
-          </li>
-          <li>
-            <Link href="/auth/dashboard/shifts/">Shifts</Link>
-          </li>
-          <li>
-            <Link href="/auth/dashboard/forms/">Forms</Link>
-          </li>
-        </ul>
-        {children}
+        <div className="container-fluid shadow-sm mb-4">
+          <div className="row">
+            <div className="col bg-primary text-light">
+              <div className="container-xl px-0">
+                <div className="row py-2">
+                  <div className="col d-flex justify-content-between align-items-center">
+                    <h4 className="fw-bold mb-0">Label Guard</h4>
+                    <LogoutButton className={"btn btn-outline-light"} />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <nav className="navbar bg-body-tertiary navbar-expand-lg">
+              <div className="container-xl justify-content-end">
+                <button
+                  className="navbar-toggler ml-auto"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#navbarToggle"
+                  aria-controls="navbarToggle"
+                  aria-expanded="false"
+                  aria-label="Toggle navigation"
+                >
+                  <span className="navbar-toggler-icon"></span>
+                </button>
+                <div
+                  className="mt-2 mt-lg-0 collapse navbar-collapse"
+                  id="navbarToggle"
+                >
+                  <ul className="navbar-nav nav-pills nav-justified gap-1 m-auto fw-semibold">
+                    <li className="nav-item">
+                      <NavLink className="nav-link" href="/auth/dashboard/">
+                        Dashboard
+                      </NavLink>
+                    </li>
+                    <li className="nav-item">
+                      <NavLink href="/auth/dashboard/reports/">Reports</NavLink>
+                    </li>
+                    <li className="nav-item">
+                      <NavLink href="/auth/dashboard/violations/">
+                        Violations
+                      </NavLink>
+                    </li>
+                    <li className="nav-item">
+                      <NavLink href="/auth/dashboard/inventory/">
+                        Inventory
+                      </NavLink>
+                    </li>
+                    <li className="nav-item">
+                      <NavLink href="/auth/dashboard/shifts/">Shifts</NavLink>
+                    </li>
+                    <li className="nav-item">
+                      <NavLink href="/auth/dashboard/forms/">Forms</NavLink>
+                    </li>
+                  </ul>
+                  <NavBarHighlighter />
+                </div>
+              </div>
+            </nav>
+          </div>
+        </div>
+        <div className="container-xl">
+          <div
+            className="alert alert-info alert-dismissible fade show"
+            role="alert"
+          >
+            {(subscriptionActive && "USER SUBSCRIPTION VERIFIED") ||
+              "SO SORRY..."}
+            <button
+              type="button"
+              className="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
+          </div>
+          {children}
+        </div>
         <script
           src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
           integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"

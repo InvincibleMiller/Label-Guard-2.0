@@ -39,6 +39,11 @@ const {
   getNextPage,
 } = require("./backend/routes/auth/getFindingPage");
 
+const {
+  deleteFindingReport,
+  getFindingsFromFindingReport,
+} = require("./backend/routes/auth/findingReport");
+
 const submitFindingReport = require("./backend/routes/form/submitFindingReport");
 
 // express parsers
@@ -138,6 +143,12 @@ nextApp.prepare().then(() => {
   app.get("/api/auth/get-finding-page", getFindingPage);
   // route to get the next page of finding reports
   app.get("/api/auth/get-next-page", getNextPage);
+
+  // route to delete finding-report documents
+  app.post("/api/auth/delete-finding-report", deleteFindingReport);
+
+  // route to get all the violation pair from a finding report
+  app.get("/api/auth/get-violation-pairs", getFindingsFromFindingReport);
 
   // redirecting all requests to Next.js
   app.use("/auth/", checkLogin("/login"));

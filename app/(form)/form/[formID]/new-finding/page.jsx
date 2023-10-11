@@ -83,7 +83,7 @@ function page({ params }) {
           <div className="row">
             <p className="lead mb-0">{formDocument?.name || "NULL"}</p>
             <div className="d-flex justify-content-between">
-              <h2>New Finding</h2>
+              <h2 className="mb-0">New Finding</h2>
               <Link href="findings" replace className="btn btn-secondary">
                 Back
               </Link>

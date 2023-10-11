@@ -41,6 +41,7 @@ export default function page({ params }) {
     if (results.status !== 200) {
       // display some kind of alert with the errors
       console.log(`Error: ${results.status}`);
+      return;
     }
 
     // else,

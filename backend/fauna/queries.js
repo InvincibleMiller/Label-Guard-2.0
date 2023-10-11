@@ -355,6 +355,43 @@ async function createFindingReportDocument(finding_report_skeleton) {
   return report;
 }
 
+async function deleteFindingReportDocument(location_id, finding_report_id) {
+  const delete_query = fql`
+  let finding_report = FindingReports.byId(${finding_report_id})
+
+  if (finding_report!.location_id != ${location_id}) {
+    abort("Must own document!")
+  }  
+
+  finding_report!.findings.forEach(finding_id => ViolationPairs.byId(finding_id)!.delete())
+  
+  finding_report!.delete()
+  `;
+
+  const { data: delete_res } = await client.query(delete_query);
+
+  return delete_res;
+}
+
+async function getViolationPairsFromFindingDocument(
+  location_id,
+  finding_report_id
+) {
+  const query = fql`
+  let finding_report = FindingReports.byId(${finding_report_id})
+
+  if (finding_report!.location_id != ${location_id}) {
+    abort("Must own document!")
+  }  
+
+  finding_report!.findings.map(finding_id => ViolationPairs.byId(finding_id))
+  `;
+
+  const { data: violationPairList } = await client.query(query);
+
+  return violationPairList;
+}
+
 async function getFindingReportsByLocation(location_id, limit) {
   const query = fql`FindingReports.byLocationId(${location_id}).order(desc(.date)).paginate(${limit})`;
 
@@ -395,6 +432,8 @@ module.exports = {
   getAllProductsForLocation,
   getAllViolationsForLocation,
   getFindingReportsByLocation,
+  deleteFindingReportDocument,
+  getViolationPairsFromFindingDocument,
   // forms
   loginToForm,
   getLocationSettings,

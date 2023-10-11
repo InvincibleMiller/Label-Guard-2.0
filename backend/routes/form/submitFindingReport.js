@@ -53,7 +53,7 @@ const submitFindingReport = async (req, res, next) => {
 
     res.status(200).json(findingReportResult);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     next(error);
   }
 };
