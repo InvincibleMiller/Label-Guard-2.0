@@ -73,7 +73,7 @@ export default async function RootLayout({ children, params }) {
   return (
     <html lang="en">
       <body>
-        <div className="container-fluid shadow-sm mb-4">
+        <header className="container-fluid shadow-sm mb-4 sticky-header">
           <div className="row">
             <div className="col bg-primary text-light">
               <div className="container-xl py-2 px-0">
@@ -133,7 +133,7 @@ export default async function RootLayout({ children, params }) {
               </div>
             </nav>
           </div>
-        </div>
+        </header>
         <div className="container-xl">
           <div
             className="alert alert-info alert-dismissible fade show"

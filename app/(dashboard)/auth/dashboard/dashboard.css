@@ -5,3 +5,13 @@ body {
 .finding-list {
   list-style: none;
 }
+
+.form-floating:only-child {
+  margin-bottom: 0 !important;
+}
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}

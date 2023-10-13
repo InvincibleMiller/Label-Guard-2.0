@@ -10,10 +10,10 @@ Label Guard is a full stack Web App used to track violations and repeat violatio
 
 Label Guard versions 2.0+ use this tech stack:
 
-- Fauna DB (FQL v10)
+- Node.js
 - Express.js
 - Next.js
-- Node.js
+- Fauna DB (FQL v10)
 - Bootstrap
 
 This specific tech stack is absolutely incredible because it allows the benefits of Next.js, specifically dynamically rendering content, to be coupled with the versatility of Express.js as a backend. Fauna DB is an incredible fast, serverless, NoSQL relational database.

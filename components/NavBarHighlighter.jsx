@@ -17,8 +17,6 @@ function NavBarHighlighter() {
         link.classList.remove(className);
       });
 
-      console.log(routerPathName);
-
       if (link.getAttribute("href") === routerPathName) {
         classArr.forEach((className) => {
           link.classList.add(className);

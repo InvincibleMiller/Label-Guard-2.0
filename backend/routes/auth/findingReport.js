@@ -1,6 +1,7 @@
 const {
   deleteFindingReportDocument,
   getViolationPairsFromFindingDocument,
+  getFindingReportDocument: getFindingReportDocumentFromFauna,
 } = require("../../fauna/queries");
 
 // POST
@@ -26,7 +27,7 @@ const deleteFindingReport = async (req, res, next) => {
 };
 
 // GET
-const getFindingsFromFindingReport = async (req, res, next) => {
+const getFindingReportDocument = async (req, res, next) => {
   try {
     const locationID = req.cookies[process.env.LOCATION_ID_COOKIE];
     const { documentID } = req.query;
@@ -40,11 +41,16 @@ const getFindingsFromFindingReport = async (req, res, next) => {
       documentID
     );
 
-    res.status(200).json(violationPairList);
+    const findingDocument = await getFindingReportDocumentFromFauna(
+      locationID,
+      documentID
+    );
+
+    res.status(200).json({ ...findingDocument, findings: violationPairList });
   } catch (error) {
     console.error(error);
     next(error);
   }
 };
 
-module.exports = { deleteFindingReport, getFindingsFromFindingReport };
+module.exports = { deleteFindingReport, getFindingReportDocument };

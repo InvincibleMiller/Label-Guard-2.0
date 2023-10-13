@@ -23,12 +23,8 @@ export default function page() {
   // get a list of all the current forms for this location
   async function updateFormsList() {
     try {
-      const res = await fetch(
-        process.env.NEXT_PUBLIC_URL + "api/auth/get-forms",
-        {
-          method: "GET",
-          credentials: "same-origin",
-        }
+      const res = await Fetcher.get(
+        process.env.NEXT_PUBLIC_URL + "api/auth/get-forms"
       );
 
       const { data: forms } = await res.json();

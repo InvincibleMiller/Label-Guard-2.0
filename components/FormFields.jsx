@@ -45,12 +45,12 @@ export function TextInput({
           return (
             <>
               <input
+                {...field}
                 id={id}
                 type={type}
                 className="form-control"
                 placeholder={placeHolder}
                 autoComplete={autoComplete}
-                {...field}
               />
               <label htmlFor={id} className="form-label">
                 {title}

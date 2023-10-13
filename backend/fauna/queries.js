@@ -320,7 +320,7 @@ async function getLastViolationPair(
   product_id,
   timeStamp
 ) {
-  const query = fql`ViolationPairs.byViolationIdAndProductId(${violation_id}, ${product_id}).where(.found_on <= ${timeStamp}).order(desc(.found_on)).first()`;
+  const query = fql`ViolationPairs.byViolationIdAndProductId(${violation_id}, ${product_id}).where(.found_on <= ${timeStamp}).order(desc(.found_on)).firstWhere(.location_id == ${location_id})`;
 
   const { data: violationPair } = await client.query(query);
 
@@ -392,6 +392,14 @@ async function getViolationPairsFromFindingDocument(
   return violationPairList;
 }
 
+async function getFindingReportDocument(location_id, finding_report_id) {
+  const query = fql`FindingReports.byLocationId(${location_id}).firstWhere(.id == ${finding_report_id})`;
+
+  const { data: findingReport } = await client.query(query);
+
+  return findingReport;
+}
+
 async function getFindingReportsByLocation(location_id, limit) {
   const query = fql`FindingReports.byLocationId(${location_id}).order(desc(.date)).paginate(${limit})`;
 
@@ -432,6 +440,7 @@ module.exports = {
   getAllProductsForLocation,
   getAllViolationsForLocation,
   getFindingReportsByLocation,
+  getFindingReportDocument,
   deleteFindingReportDocument,
   getViolationPairsFromFindingDocument,
   // forms

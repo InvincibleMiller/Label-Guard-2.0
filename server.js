@@ -41,7 +41,7 @@ const {
 
 const {
   deleteFindingReport,
-  getFindingsFromFindingReport,
+  getFindingReportDocument,
 } = require("./backend/routes/auth/findingReport");
 
 const submitFindingReport = require("./backend/routes/form/submitFindingReport");
@@ -148,7 +148,7 @@ nextApp.prepare().then(() => {
   app.post("/api/auth/delete-finding-report", deleteFindingReport);
 
   // route to get all the violation pair from a finding report
-  app.get("/api/auth/get-violation-pairs", getFindingsFromFindingReport);
+  app.get("/api/auth/get-finding-report", getFindingReportDocument);
 
   // redirecting all requests to Next.js
   app.use("/auth/", checkLogin("/login"));
