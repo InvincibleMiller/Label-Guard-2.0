@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { Controller } from "react-hook-form";
 
 import "./form.css";
+import moment from "moment";
 
 const errorClass = "form-control-danger";
 
@@ -21,6 +22,7 @@ export function TextInput({
   type = "text",
   placeHolder = "",
   autoComplete = "off",
+  defaultValue = undefined,
   options = {},
 }) {
   const ref = useRef();
@@ -34,13 +36,29 @@ export function TextInput({
 
   return (
     <div className="form-floating mb-3" ref={ref}>
-      <input
-        className="form-control"
-        type={type}
-        autoComplete={autoComplete}
-        id={id}
-        placeholder={placeHolder}
-        {...form.register(id, options)}
+      <Controller
+        name={id}
+        control={form.control}
+        defaultValue={defaultValue}
+        rules={{ ...options }}
+        render={({ field }) => {
+          return (
+            <>
+              <input
+                id={id}
+                type={type}
+                className="form-control"
+                placeholder={placeHolder}
+                autoComplete={autoComplete}
+                {...field}
+              />
+              <label htmlFor={id} className="form-label">
+                {title}
+                {errors[id] && <> — {errors[id]?.message}</>}
+              </label>
+            </>
+          );
+        }}
       />
       <label htmlFor={id} className="form-label">
         {title}
@@ -183,7 +201,13 @@ export function NumberInput({
   );
 }
 
-export function DateInput({ id, title, form, options = {} }) {
+export function DateInput({
+  id,
+  title,
+  form,
+  options = {},
+  defaultValue = undefined,
+}) {
   const ref = useRef();
   const errors = form.formState.errors;
 
@@ -193,12 +217,10 @@ export function DateInput({ id, title, form, options = {} }) {
     ref.current?.classList.remove(errorClass);
   }
 
-  const getCurrentDate = () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0"); // Month is 0-indexed
-    const day = String(today.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
+  const date = moment(defaultValue || undefined);
+
+  const getDateString = () => {
+    return date.format("YYYY-MM-DD");
   };
 
   return (
@@ -206,7 +228,7 @@ export function DateInput({ id, title, form, options = {} }) {
       <Controller
         name={id}
         control={form.control}
-        defaultValue={getCurrentDate()} // Set the default value to the current date
+        defaultValue={getDateString()} // Set the default value to the current date
         rules={{
           ...options,
         }}
@@ -256,11 +278,12 @@ export function SelectInput({
         rules={{
           ...options,
         }}
+        defaultValue={defaultValue}
         render={({ field }) => (
           <>
             <select
               id={id}
-              defaultValue={defaultValue}
+              // defaultValue={defaultValue}
               className="form-select form-control"
               {...field}
             >
