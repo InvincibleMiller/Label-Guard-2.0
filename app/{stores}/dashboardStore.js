@@ -35,11 +35,12 @@ export const useDashboardStore = create(
 // This hook loads every primitive document owned by the location
 // into session storage for easy access later
 export function fetchLocationEverything() {
-  const dashboardStore = useDashboardStore((state) => state);
-
-  const { setForms, setInventory, setShifts, setViolations } = dashboardStore;
-
-  const [dashboardState, setDBState] = useState({});
+  const [dashboardState, setDBState] = useState({
+    forms: [],
+    inventory: [],
+    shifts: [],
+    violations: [],
+  });
 
   useEffect(() => {
     (async () => {
@@ -52,21 +53,19 @@ export function fetchLocationEverything() {
       const { data: shifts } = await shiftResult.json();
 
       const inventoryResult = await Fetcher.get(`${baseURL}get-inventory`);
-      const { data: products } = await inventoryResult.json();
+      const { data: inventory } = await inventoryResult.json();
 
       const formResult = await Fetcher.get(`${baseURL}get-forms`);
       const { data: forms } = await formResult.json();
 
-      setForms(forms);
-      setInventory(products);
-      setShifts(shifts);
-      setViolations(violations);
+      setDBState({
+        forms,
+        inventory,
+        shifts,
+        violations,
+      });
     })();
   }, []);
-
-  useEffect(() => {
-    setDBState(dashboardStore);
-  }, [dashboardStore]);
 
   return dashboardState;
 }
