@@ -4,10 +4,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 
-import {
-  fetchLocationEverything,
-  useDashboardStore,
-} from "@/app/{stores}/dashboardStore";
+import { fetchLocationEverything } from "@/app/{stores}/dashboardStore";
 
 import {
   SelectInput,
@@ -20,22 +17,49 @@ import {
 import { Fetcher } from "@/util/fetchHelpers";
 
 import { Card } from "@/components/Bootstrap";
-import { useStore } from "zustand";
-import moment from "moment";
 
 function page({ params }) {
+  console.log("rendering ...");
+
   const router = useRouter();
   const { documentID } = params;
 
   const findingReportForm = useForm();
   const { handleSubmit } = findingReportForm;
 
-  const [findingReport, setFindingReportDocument] = useState([]);
+  const [findingReport, setFindingReportDocument] = useState({});
+  const [deletedFindings, setDeletedFindings] = useState([]);
 
   const locationState = fetchLocationEverything();
 
+  function deleteIndividualFinding(index) {
+    const deletedFinding = findingReport.findings.slice(index, index + 1)[0];
+
+    setDeletedFindings([...deletedFindings, deletedFinding.id]);
+  }
+
+  function restoreIndividualFinding(id) {
+    const _tmp = deletedFindings.slice();
+    const restoreIndex = _tmp.indexOf(id);
+    setDeletedFindings(_tmp.toSpliced(restoreIndex, 1));
+  }
+
   async function updateFindingReport(payload) {
-    console.log(payload);
+    const formattedFindings = {};
+
+    payload.findings
+      .filter((finding) => !deletedFindings.includes(finding.id))
+      .forEach((finding) => {
+        const id = finding.id;
+        delete finding.id;
+        formattedFindings[id] = finding;
+      });
+
+    console.log({
+      ...payload,
+      findings: formattedFindings,
+      deletedFindings,
+    });
   }
 
   async function deleteFindingReport(e) {
@@ -79,62 +103,107 @@ function page({ params }) {
             defaultValue={findingReport.date.isoString}
           />
         )}
-        {findingReport?.findings?.map((finding, i) => (
-          <Card title={`Finding ${i + 1}`} key={i} className="mb-4">
-            <div className="container-fluid">
-              {(locationState && (
-                <div className="row gap-3">
-                  <div className="col-12 col-md p-0">
-                    <SelectInput
-                      form={findingReportForm}
-                      title={"Violation"}
-                      id={`findings[${i}].violation_id`}
-                      defaultValue={finding.violation_id}
-                    >
-                      {locationState.violations.map((violation, v_index) => {
-                        return (
-                          <option key={v_index} value={violation.id}>
-                            {violation.name}
-                          </option>
-                        );
-                      }) || (
-                        <option value={finding.violation_id}>Violation</option>
-                      )}
-                    </SelectInput>
-                  </div>
-                  <div className="col-12 col-md p-0">
-                    <SelectInput
-                      form={findingReportForm}
-                      title={"Product"}
-                      id={`findings[${i}].product_id`}
-                      defaultValue={finding.product_id}
-                    >
-                      {locationState.inventory.map((product, p_index) => {
-                        return (
-                          <option key={p_index} value={product.id}>
-                            {product.name}
-                          </option>
-                        );
-                      }) || (
-                        <option value={finding.violation_id}>Product</option>
-                      )}
-                    </SelectInput>
-                  </div>
-                  <div className="col-12 p-0">
-                    <TextAreaInput
-                      title={"Corrective"}
-                      form={findingReportForm}
-                      id={`findings[${i}].corrective`}
-                      defaultValue={finding.corrective}
-                      rows={3}
-                    />
-                  </div>
+        {findingReport?.findings?.map((finding, i) => {
+          if (deletedFindings.includes(finding.id)) {
+            return (
+              <Card key={i} className={"mb-4"}>
+                <div className="d-flex justify-content-between align-items-center">
+                  <span>
+                    <em>{`Deleted finding ${i + 1}`}</em>
+                  </span>
+                  <button
+                    onClick={() => restoreIndividualFinding(finding.id)}
+                    type="button"
+                    className="btn btn-secondary"
+                  >
+                    Restore
+                  </button>
                 </div>
-              )) ||
-                "LOADING"}
-            </div>
-          </Card>
-        )) || "LOADING"}
+              </Card>
+            );
+          }
+
+          return (
+            <Card
+              title={
+                <div className="d-flex justify-content-between align-items-center">
+                  <span>{`Finding ${i + 1}`}</span>
+                  <button
+                    onClick={() => deleteIndividualFinding(i)}
+                    type="button"
+                    className="btn btn-outline-danger"
+                  >
+                    Delete
+                  </button>
+                </div>
+              }
+              key={i}
+              className="mb-4"
+            >
+              <div className="container-fluid">
+                {(locationState && (
+                  <div className="row gap-3">
+                    <div className="col-12 col-md p-0">
+                      <div className="d-none">
+                        <TextInput
+                          id={`findings[${i}].id`}
+                          form={findingReportForm}
+                          defaultValue={finding.id}
+                        />
+                      </div>
+                      <SelectInput
+                        form={findingReportForm}
+                        title={"Violation"}
+                        id={`findings[${i}].violation_id`}
+                        defaultValue={finding.violation_id}
+                      >
+                        {locationState.violations.map((violation, v_index) => {
+                          return (
+                            <option key={v_index} value={violation.id}>
+                              {violation.name}
+                            </option>
+                          );
+                        }) || (
+                          <option value={finding.violation_id}>
+                            Violation
+                          </option>
+                        )}
+                      </SelectInput>
+                    </div>
+                    <div className="col-12 col-md p-0">
+                      <SelectInput
+                        form={findingReportForm}
+                        title={"Product"}
+                        id={`findings[${i}].product_id`}
+                        defaultValue={finding.product_id}
+                      >
+                        {locationState.inventory.map((product, p_index) => {
+                          return (
+                            <option key={p_index} value={product.id}>
+                              {product.name}
+                            </option>
+                          );
+                        }) || (
+                          <option value={finding.violation_id}>Product</option>
+                        )}
+                      </SelectInput>
+                    </div>
+                    <div className="col-12 p-0">
+                      <TextAreaInput
+                        title={"Corrective"}
+                        form={findingReportForm}
+                        id={`findings[${i}].corrective`}
+                        defaultValue={finding.corrective}
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+                )) ||
+                  "LOADING"}
+              </div>
+            </Card>
+          );
+        }) || "LOADING"}
         <SubmitButton text={"Update Finding Report"} />
       </form>
       <form onSubmit={deleteFindingReport}>
