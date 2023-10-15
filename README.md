@@ -13,6 +13,7 @@ Label Guard versions 2.0+ use this tech stack:
 - Node.js
 - Express.js
 - Next.js
+- React.js
 - Fauna DB (FQL v10)
 - Bootstrap
 
