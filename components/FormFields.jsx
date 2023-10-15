@@ -22,7 +22,7 @@ export function TextInput({
   type = "text",
   placeHolder = "",
   autoComplete = "off",
-  defaultValue = undefined,
+  defaultValue = "",
   options = {},
 }) {
   const ref = useRef();
@@ -60,10 +60,6 @@ export function TextInput({
           );
         }}
       />
-      <label htmlFor={id} className="form-label">
-        {title}
-        {errors[id] && <> — {errors[id]?.message}</>}
-      </label>
     </div>
   );
 }
