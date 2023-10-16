@@ -9,7 +9,7 @@ Label Guard was inspired by a few simple questions:
 - How often are these violations occurring?
 - etc., etc.
 
-Restaurant leadership often asks these kinds of questions.
+Restaurant leaderships often asks these kinds of questions.
 
 Label Guard answers those questions (and many more) with precise data tracking and report compilation.
 
