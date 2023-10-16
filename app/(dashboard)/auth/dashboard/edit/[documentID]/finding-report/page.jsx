@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 
 import { fetchLocationEverything } from "@/app/{stores}/dashboardStore";
 
+import Lo from "lodash";
+
 import {
   SelectInput,
   TextAreaInput,
@@ -19,8 +21,6 @@ import { Fetcher } from "@/util/fetchHelpers";
 import { Card } from "@/components/Bootstrap";
 
 function page({ params }) {
-  console.log("rendering ...");
-
   const router = useRouter();
   const { documentID } = params;
 
@@ -44,22 +44,35 @@ function page({ params }) {
     setDeletedFindings(_tmp.toSpliced(restoreIndex, 1));
   }
 
-  async function updateFindingReport(payload) {
+  async function updateFindingReport(data) {
     const formattedFindings = {};
 
-    payload.findings
+    // Were creating a deep clone with LoDash to
+    // avoid modifying immutable state by mistake
+    // because of JavaScript references
+    const findingsClone = Lo.cloneDeep(findingReport.findings);
+
+    findingsClone
       .filter((finding) => !deletedFindings.includes(finding.id))
       .forEach((finding) => {
-        const id = finding.id;
+        const id = new String(finding.id);
         delete finding.id;
         formattedFindings[id] = finding;
       });
 
-    console.log({
-      ...payload,
+    const payload = {
+      ...data,
       findings: formattedFindings,
       deletedFindings,
-    });
+      documentID,
+    };
+
+    console.log(payload);
+
+    Fetcher.post(
+      `${process.env.NEXT_PUBLIC_URL}api/auth/update-finding-report`,
+      payload
+    );
   }
 
   async function deleteFindingReport(e) {
@@ -105,6 +118,7 @@ function page({ params }) {
         )}
         {findingReport?.findings?.map((finding, i) => {
           if (deletedFindings.includes(finding.id)) {
+            console.log("deleted " + i);
             return (
               <Card key={i} className={"mb-4"}>
                 <div className="d-flex justify-content-between align-items-center">
