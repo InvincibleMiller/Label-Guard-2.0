@@ -217,6 +217,12 @@ const _getFQLCollection = (documentType) => {
     case "VIOLATIONS":
       return fql`Violations`;
 
+    case "VIOLATION_PAIRS":
+      return fql`ViolationPairs`;
+
+    case "FINDING_REPORTS":
+      return fql`FindingReports`;
+
     default:
       return null;
   }
