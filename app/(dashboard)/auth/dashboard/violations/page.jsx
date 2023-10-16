@@ -49,7 +49,7 @@ export default function page() {
 
   return (
     <div>
-      <h3>INVENTORY</h3>
+      <h3>VIOLATIONS</h3>
       <form onSubmit={handleSubmit(registerViolation)}>
         <TextInput
           id="violation-name"
