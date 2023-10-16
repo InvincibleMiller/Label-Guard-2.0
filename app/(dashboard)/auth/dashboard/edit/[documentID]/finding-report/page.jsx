@@ -67,12 +67,14 @@ function page({ params }) {
       documentID,
     };
 
-    console.log(payload);
-
-    Fetcher.post(
+    const result = await Fetcher.post(
       `${process.env.NEXT_PUBLIC_URL}api/auth/update-finding-report`,
       payload
     );
+
+    if (result.status === 200) {
+      router.push("/auth/dashboard/");
+    }
   }
 
   async function deleteFindingReport(e) {
@@ -116,9 +118,23 @@ function page({ params }) {
             defaultValue={findingReport.date.isoString}
           />
         )}
+        {findingReport?.shift_id && (
+          <SelectInput
+            form={findingReportForm}
+            title={"Shift"}
+            id={"shift_id"}
+            defaultValue={findingReport.shift_id}
+          >
+            {locationState &&
+              locationState.shifts.map((shift, i) => (
+                <option key={i} value={shift.id}>
+                  {shift.name}
+                </option>
+              ))}
+          </SelectInput>
+        )}
         {findingReport?.findings?.map((finding, i) => {
           if (deletedFindings.includes(finding.id)) {
-            console.log("deleted " + i);
             return (
               <Card key={i} className={"mb-4"}>
                 <div className="d-flex justify-content-between align-items-center">
