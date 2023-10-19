@@ -1,6 +1,8 @@
 require("dotenv-flow").config();
 const express = require("express");
+const http = require("http");
 const next = require("next");
+const WebSocket = require("ws");
 
 // express middleware functions
 const { checkLogin } = require("./backend/middleware/checkLogin");
@@ -47,6 +49,8 @@ const {
 
 const submitFindingReport = require("./backend/routes/form/submitFindingReport");
 
+const compileReport = require("./backend/routes/auth/compileReport");
+
 // express parsers
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
@@ -59,20 +63,43 @@ const port = process.env.PORT || 3000;
 const dev = process.env.NODE_ENV !== "production";
 
 // creating the app either in production or dev mode
-const nextApp = next({ dev });
-const handle = nextApp.getRequestHandler();
+const app = next({ dev });
+const handle = app.getRequestHandler();
 
 // running the app, async operation
-nextApp.prepare().then(() => {
-  const app = express();
+app.prepare().then(() => {
+  const server = express();
+  // Web socket server
+  // TODO - use web sockets to update the client's form whenever \
+  // a location changes its inventory violations of products
+  const httpServer = http.createServer(server);
+  const wss = new WebSocket.Server({ server: httpServer });
+
+  // WebSocket connection handling
+  wss.on("connection", (ws) => {
+    console.log("New WebSocket connection established.");
+
+    // Handle incoming messages
+    ws.on("message", (message) => {
+      console.log("Received:", message);
+    });
+
+    // Send a welcome message to the client
+    ws.send("Welcome to the WebSocket server!");
+
+    // Handle the WebSocket connection closing
+    ws.on("close", () => {
+      console.log("WebSocket connection closed.");
+    });
+  });
 
   // parsing middleware
-  app.use(bodyParser.json());
-  app.use(cookieParser(process.env.COOKIE_PARSER_SECRET));
+  server.use(bodyParser.json());
+  server.use(cookieParser(process.env.COOKIE_PARSER_SECRET));
 
   // useful middleware during development
   if (dev) {
-    app.use("/api/", (req, res, next) => {
+    server.use("/api/", (req, res, next) => {
       console.log(`${Date.now()} — ${req.method} @/api${req.url}`);
 
       return next();
@@ -80,87 +107,94 @@ nextApp.prepare().then(() => {
   }
 
   // register new user api route
-  app.post("/api/register", register.post, login.post);
+  server.post("/api/register", register.post, login.post);
 
   // login existing user
-  app.post("/api/login", login.post);
+  server.post("/api/login", login.post);
 
   //
   // # Form API Routes
   //
 
   // login to a form
-  app.post("/api/form/login", loginToForm);
+  server.post("/api/form/login", loginToForm);
 
   // get the location data for use in the form
-  app.get("/api/form/get-location-data", getLocationData);
+  server.get("/api/form/get-location-data", getLocationData);
 
   // submit a finding report
-  app.post("/api/form/submit-finding-report", submitFindingReport);
+  server.post("/api/form/submit-finding-report", submitFindingReport);
 
   //
   // # API Routes that requires users to be logged
   //
 
-  app.use("/api/auth", checkLogin());
+  server.use("/api/auth", checkLogin());
   // logout api route
-  app.post("/api/auth/logout", logout.post);
+  server.post("/api/auth/logout", logout.post);
   // register location api route and redirect to checkout
-  app.post("/api/auth/register-location", registerLocation.post, checkout.post);
+  server.post(
+    "/api/auth/register-location",
+    registerLocation.post,
+    checkout.post
+  );
   // checkout session api route
-  app.post("/api/auth/checkout", checkout.post);
+  server.post("/api/auth/checkout", checkout.post);
   // verify customer subscription
-  app.get("/api/auth/verify-subscription", verifySubscription.get);
+  server.get("/api/auth/verify-subscription", verifySubscription.get);
   // register a new form for the location
-  app.post("/api/auth/register-form", registerForm);
+  server.post("/api/auth/register-form", registerForm);
   // register new shift for the location
-  app.post("/api/auth/register-shift", registerShift);
+  server.post("/api/auth/register-shift", registerShift);
   // register a new product for the location
-  app.post("/api/auth/register-product", registerProduct);
+  server.post("/api/auth/register-product", registerProduct);
   // register a new violation for the location
-  app.post("/api/auth/register-violation", registerViolation);
+  server.post("/api/auth/register-violation", registerViolation);
   // get forms for location
-  app.get("/api/auth/get-forms", getForms);
+  server.get("/api/auth/get-forms", getForms);
   // get shifts for location
-  app.get("/api/auth/get-shifts", getShifts);
+  server.get("/api/auth/get-shifts", getShifts);
   // get inventory for location
-  app.get("/api/auth/get-inventory", getInventory);
+  server.get("/api/auth/get-inventory", getInventory);
   // get inventory for violation
-  app.get("/api/auth/get-violations", getViolations);
+  server.get("/api/auth/get-violations", getViolations);
   // get document route
-  app.get("/api/auth/edit/:documentID/:documentCollection", getDocument);
+  server.get("/api/auth/edit/:documentID/:documentCollection", getDocument);
   // route to delete documents owned by the location
-  app.post("/api/auth/delete-document", deleteDocument);
+  server.post("/api/auth/delete-document", deleteDocument);
   // route to update form documents owned by a location
-  app.post("/api/auth/update-form", updateFormDocument);
+  server.post("/api/auth/update-form", updateFormDocument);
   // route to update shift documents owned by a location
-  app.post("/api/auth/update-shift", updateShiftDocument);
+  server.post("/api/auth/update-shift", updateShiftDocument);
   // route to update product documents owned by a location
-  app.post("/api/auth/update-product", updateProductDocument);
+  server.post("/api/auth/update-product", updateProductDocument);
   // route to update violation documents owned by a location
-  app.post("/api/auth/update-violation", updateViolationDocument);
+  server.post("/api/auth/update-violation", updateViolationDocument);
 
   // route to get the finding reports as a page
-  app.get("/api/auth/get-finding-page", getFindingPage);
+  server.get("/api/auth/get-finding-page", getFindingPage);
   // route to get the next page of finding reports
-  app.get("/api/auth/get-next-page", getNextPage);
+  server.get("/api/auth/get-next-page", getNextPage);
 
   // route to delete finding-report documents
-  app.post("/api/auth/delete-finding-report", deleteFindingReport);
+  server.post("/api/auth/delete-finding-report", deleteFindingReport);
 
   // route to get all the violation pair from a finding report
-  app.get("/api/auth/get-finding-report", getFindingReportDocument);
+  server.get("/api/auth/get-finding-report", getFindingReportDocument);
 
   // route to update the finding document
-  app.post("/api/auth/update-finding-report", editFindingReport);
+  server.post("/api/auth/update-finding-report", editFindingReport);
+
+  // get the compiled report
+  server.get("/api/auth/get-full-report", compileReport);
 
   // redirecting all requests to Next.js
-  app.use("/auth/", checkLogin("/login"));
-  app.all("*", (req, res) => {
+  server.use("/auth/", checkLogin("/login"));
+  server.all("*", (req, res) => {
     return handle(req, res);
   });
 
-  app.listen(port, (err) => {
+  server.listen(port, (err) => {
     if (err) throw err;
     console.log(`\n# Running on http://localhost:${port}/, dev: ${dev}`);
   });
