@@ -17,6 +17,12 @@ const compileReport = async (req, res, next) => {
     const { from, to } = req.query;
     const locationID = req.cookies[process.env.LOCATION_ID_COOKIE];
 
+    // make sure client input exists
+    if (from === undefined || to === undefined) {
+      res.status(422).json("must include from/to");
+      return;
+    }
+
     const locationSettings =
       (await getLocationSettings(locationID)) || getDefaultSettings();
     const { maximum_repeat_threshold } = locationSettings;
@@ -75,7 +81,6 @@ const compileReport = async (req, res, next) => {
     const weightedFindings = violationPairs.map((violationPair) => {
       const hash = hashVP(violationPair);
       const { product_id, violation_id, shift_id, corrective } = violationPair;
-      console.log(shift_id);
       const found_on = moment(violationPair.found_on.isoString);
 
       // save these documents for convenience
@@ -158,7 +163,7 @@ const compileReport = async (req, res, next) => {
       weightedFindingsByViolation,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     next(error);
   }
 };

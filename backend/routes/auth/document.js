@@ -23,16 +23,6 @@ const getDocument = async (req, res, next) => {
       throw new Error("Request must include user id");
     }
 
-    // Validate that the user owns the location for which they are querying data
-    const { data: userOwnsLocation } = await locationBelongsToUser(
-      userID,
-      locationID
-    );
-
-    if (!userOwnsLocation) {
-      throw new Error("Location must belong to user");
-    }
-
     const document = await getDocumentFromCollection(
       documentID,
       documentCollection
@@ -58,16 +48,6 @@ const updateFormDocument = async (req, res, next) => {
       documentType == undefined
     ) {
       throw new Error("Undefined input");
-    }
-
-    // Validate that the user owns the location for which they are querying data
-    const { data: userOwnsLocation } = await locationBelongsToUser(
-      userID,
-      locationID
-    );
-
-    if (!userOwnsLocation) {
-      throw new Error("Location must belong to user");
     }
 
     //
@@ -111,16 +91,6 @@ const updateShiftDocument = async (req, res, next) => {
       throw new Error("Undefined input");
     }
 
-    // Validate that the user owns the location for which they are querying data
-    const { data: userOwnsLocation } = await locationBelongsToUser(
-      userID,
-      locationID
-    );
-
-    if (!userOwnsLocation) {
-      throw new Error("Location must belong to user");
-    }
-
     //
     // # After user input validation
     //
@@ -159,16 +129,6 @@ const updateProductDocument = async (req, res, next) => {
       documentType == undefined
     ) {
       throw new Error("Undefined input");
-    }
-
-    // Validate that the user owns the location for which they are querying data
-    const { data: userOwnsLocation } = await locationBelongsToUser(
-      userID,
-      locationID
-    );
-
-    if (!userOwnsLocation) {
-      throw new Error("Location must belong to user");
     }
 
     //
@@ -216,16 +176,6 @@ const updateViolationDocument = async (req, res, next) => {
       documentType == undefined
     ) {
       throw new Error("Undefined input");
-    }
-
-    // Validate that the user owns the location for which they are querying data
-    const { data: userOwnsLocation } = await locationBelongsToUser(
-      userID,
-      locationID
-    );
-
-    if (!userOwnsLocation) {
-      throw new Error("Location must belong to user");
     }
 
     //

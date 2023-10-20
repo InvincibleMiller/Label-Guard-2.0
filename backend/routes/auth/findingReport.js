@@ -97,8 +97,6 @@ const editFindingReport = async (req, res, next) => {
       documentID
     );
 
-    console.log(originalFindingReport);
-
     // confirm that the client owns the document
     if (originalFindingReport.location_id !== locationID) {
       throw new Error("Must own provided document");
