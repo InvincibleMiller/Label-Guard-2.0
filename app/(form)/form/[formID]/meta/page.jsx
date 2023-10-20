@@ -57,7 +57,6 @@ function page({ params }) {
     setSubShift(JSON.parse(shift));
 
     router.replace(`${process.env.NEXT_PUBLIC_URL}form/${formID}/findings`);
-    resetForm();
   }
 
   if (!formDocument) {

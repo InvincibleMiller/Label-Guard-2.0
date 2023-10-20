@@ -22,8 +22,9 @@ const submitFindingReport = async (req, res, next) => {
     const compiledFindingsPromise = findings.map(async (finding, index) => {
       const newViolationPair = await createViolationPair(
         location.id,
-        finding.violation.id,
         finding.product.id,
+        shift.id,
+        finding.violation.id,
         finding.corrective,
         date_NOW
       );
@@ -57,55 +58,5 @@ const submitFindingReport = async (req, res, next) => {
     next(error);
   }
 };
-
-// ## Repeat Tracking Logic (old system)
-
-// //
-// // get the location settings
-// //
-// const locationSettings = (await getLocationSettings(location.id)) || {
-//   // Milliseconds in a week
-//   maximum_repeat_threshold: 7 * 24 * 60 * 60 * 1000,
-// };
-// // Destructure settings for easy access later
-// const { maximum_repeat_threshold } = locationSettings;
-
-// const violationPairs = {};
-
-// // for each finding
-
-// const findingEntry = {
-//   violation_name: finding.violation.name,
-//   product_name: finding.product.name,
-//   weight: finding.violation.weight,
-//   repeat: false,
-// };
-
-// // get the most recent corresponding ViolationPair
-// // if it exists relative to the current timestamp (NOW)
-
-// // store these in a cache
-// const vp_hash = finding.violation.id + finding.product.id + NOW;
-
-// if (violationPairs[vp_hash] === undefined) {
-//   violationPairs[vp_hash] = await getLastViolationPair(
-//     finding.violation.id,
-//     finding.product.id,
-//     date_NOW
-//   );
-// }
-
-// if (violationPairs[vp_hash]) {
-//   // The ViolationPair exists
-//   // Check if this finding is a repeat
-//   if (
-//     NOW <
-//     violationPairs[vp_hash].last_occurrence + maximum_repeat_threshold
-//   ) {
-//     // This finding is a repeat
-//     findingEntry.repeat = true;
-//     findingEntry.weight = finding.violation.repeat_weight;
-//   }
-// }
 
 module.exports = submitFindingReport;

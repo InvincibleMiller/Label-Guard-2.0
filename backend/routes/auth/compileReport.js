@@ -5,6 +5,7 @@ const {
   getDefaultSettings,
   getViolationPairs,
   getAllProductsForLocation,
+  getAllShiftsForLocation,
   getAllViolationsForLocation,
 } = require("../../fauna/queries");
 
@@ -37,6 +38,11 @@ const compileReport = async (req, res, next) => {
     const violationsById = Lo.keyBy(violations, "id");
 
     const {
+      data: { data: shifts },
+    } = await getAllShiftsForLocation(locationID);
+    const shiftsById = Lo.keyBy(shifts, "id");
+
+    const {
       data: { data: products },
     } = await getAllProductsForLocation(locationID);
     const productsById = Lo.keyBy(products, "id");
@@ -49,14 +55,28 @@ const compileReport = async (req, res, next) => {
       end
     );
 
-    const hashVP = ({ violation_id, product_id }) => violation_id + product_id;
+    const hashVP = ({ violation_id, product_id }) =>
+      `${violation_id},${product_id}`;
     const foundOnRecord = {};
+
+    // useful for finding the average frequency of
+    // a specific finding
+    const reportProfile = {
+      totalWeight: 0,
+      repeatFindings: 0,
+      findings: 0,
+    };
+    const findingProfiles = {};
+    const violationProfiles = {};
+    const shiftProfiles = {};
+    const productProfiles = {};
 
     // Find all the repeats
     const weightedFindings = violationPairs.map((violationPair) => {
       const hash = hashVP(violationPair);
-      const { product_id, violation_id } = violationPair;
-      const found_on = moment(violationPair.found_on);
+      const { product_id, violation_id, shift_id, corrective } = violationPair;
+      console.log(shift_id);
+      const found_on = moment(violationPair.found_on.isoString);
 
       // save these documents for convenience
       const violationDoc = violationsById[violation_id];
@@ -64,11 +84,12 @@ const compileReport = async (req, res, next) => {
 
       // initialize the weightedFinding
       const weightedFinding = {
-        violation: violationDoc.name,
-        product: productDoc.name,
-        weight: violationDoc.weight,
-        repeat: false,
+        corrective,
         date: found_on,
+        product: productDoc.name,
+        repeat: false,
+        violation: violationDoc.name,
+        weight: violationDoc.weight,
       };
 
       // check if the finding is a repeat and adjust the weight accordingly
@@ -79,6 +100,35 @@ const compileReport = async (req, res, next) => {
         weightedFinding.repeat = true;
         weightedFinding.weight = violationDoc.repeat_weight;
       }
+
+      reportProfile.findings += 1;
+      reportProfile.repeatFindings += weightedFinding.repeat ? 1 : 0;
+      reportProfile.totalWeight += weightedFinding.weight;
+
+      const updateProfile = (profile, key) => {
+        if (!profile[key]) {
+          // create profile if needed
+          profile[key] = {
+            totalWeight: weightedFinding.weight,
+            repeatOccurrences: weightedFinding.repeat ? 1 : 0,
+            occurrences: 1,
+            foundOn: [weightedFinding.date],
+          };
+        } else {
+          profile[key].totalWeight += weightedFinding.weight;
+          profile[key].repeatOccurrences += weightedFinding.repeat ? 1 : 0;
+          profile[key].occurrences += 1;
+          profile[key].foundOn.push(weightedFinding.date);
+        }
+      };
+
+      updateProfile(
+        findingProfiles,
+        `${violationsById[violation_id].name} ${productsById[product_id].name}`
+      );
+      updateProfile(productProfiles, productsById[product_id].name);
+      updateProfile(shiftProfiles, shiftsById[shift_id].name);
+      updateProfile(violationProfiles, violationsById[violation_id].name);
 
       // effectively save the most recent date
       // of this finding type
@@ -92,7 +142,21 @@ const compileReport = async (req, res, next) => {
       date.format("YYYY-MM-DD")
     );
 
-    res.status(200).json(weightedFindingsByDate);
+    // group findings by violation
+    const weightedFindingsByViolation = Lo.groupBy(
+      weightedFindings,
+      ({ violation }) => violation
+    );
+
+    res.status(200).json({
+      findingProfiles,
+      productProfiles,
+      shiftProfiles,
+      reportProfile,
+      violationProfiles,
+      weightedFindingsByDate,
+      weightedFindingsByViolation,
+    });
   } catch (error) {
     console.log(error);
     next(error);

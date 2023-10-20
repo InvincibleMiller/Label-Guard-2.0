@@ -342,15 +342,17 @@ async function getLastViolationPair(
 
 async function createViolationPair(
   location_id,
-  violation_id,
   product_id,
+  shift_id,
+  violation_id,
   corrective,
   timeStamp
 ) {
   const query = fql`ViolationPairs.create({
     location_id: ${location_id},
-    violation_id: ${violation_id},
     product_id: ${product_id},
+    shift_id: ${shift_id},
+    violation_id: ${violation_id},
     corrective: ${corrective},
     found_on: ${timeStamp},
   })`;
@@ -430,7 +432,7 @@ async function getTheNextPage(pageSecret) {
 }
 
 async function getViolationPairs(location_id, from, to) {
-  const query = fql`ViolationPairs.byDate(${location_id}, {from: ${from}, to: ${to}}) {found_on, violation_id, product_id, corrective}`;
+  const query = fql`ViolationPairs.byDate(${location_id}, {from: ${from}, to: ${to}}) {found_on, violation_id, product_id, shift_id, corrective}`;
 
   const { data: violation_pairs } = await client.query(query);
 

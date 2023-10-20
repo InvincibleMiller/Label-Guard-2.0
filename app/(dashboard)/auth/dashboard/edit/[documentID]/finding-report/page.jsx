@@ -78,6 +78,7 @@ function page({ params }) {
   }
 
   async function deleteFindingReport(e) {
+    e.preventDefault();
     const url = `${process.env.NEXT_PUBLIC_URL}api/auth/delete-finding-report`;
 
     const results = await Fetcher.post(url, {
