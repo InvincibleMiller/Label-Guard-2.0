@@ -34,7 +34,10 @@ const compileReport = async (req, res, next) => {
     // here i'm being lazy and one-lining it :)
     const [start, end] = [from, to].map((day, index) =>
       moment(day)
-        .add(maximum_repeat_threshold * [-1, 0].at(index), "milliseconds")
+        .add(
+          [-maximum_repeat_threshold, 24 * 60 * 60 * 1000].at(index),
+          "milliseconds"
+        )
         .toDate()
     );
 
