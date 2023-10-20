@@ -320,6 +320,13 @@ async function getLocationSettings(location_id) {
   return settings;
 }
 
+function getDefaultSettings() {
+  return {
+    // Milliseconds in a week
+    maximum_repeat_threshold: 7 * 24 * 60 * 60 * 1000,
+  };
+}
+
 async function getLastViolationPair(
   location_id,
   violation_id,
@@ -422,6 +429,14 @@ async function getTheNextPage(pageSecret) {
   return nextPage;
 }
 
+async function getViolationPairs(location_id, from, to) {
+  const query = fql`ViolationPairs.byDate(${location_id}, {from: ${from}, to: ${to}}) {found_on, violation_id, product_id, corrective}`;
+
+  const { data: violation_pairs } = await client.query(query);
+
+  return violation_pairs;
+}
+
 module.exports = {
   // authentication
   registerAdmin,
@@ -449,9 +464,11 @@ module.exports = {
   getFindingReportDocument,
   deleteFindingReportDocument,
   getViolationPairsFromFindingDocument,
+  getViolationPairs,
+  getLocationSettings,
+  getDefaultSettings,
   // forms
   loginToForm,
-  getLocationSettings,
   getLastViolationPair,
   createViolationPair,
   createFindingReportDocument,
