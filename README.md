@@ -41,6 +41,7 @@ Various other libraries are used in the app:
 - react-hook-form
 - cryptojs
 - Lodash
+- Nivo
 - etc.
 
 ### Back Story

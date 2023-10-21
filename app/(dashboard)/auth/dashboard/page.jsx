@@ -14,6 +14,7 @@ import Link from "next/link";
 export default function page() {
   return (
     <div>
+      <h3>FINDINGS</h3>
       <FindingPage />
     </div>
   );

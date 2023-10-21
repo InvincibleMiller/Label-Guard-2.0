@@ -15,3 +15,34 @@ body {
   top: 0;
   z-index: 100;
 }
+
+.chart-container {
+  border: 1px solid gray;
+  flex-direction: column;
+  width: 100% !important;
+  /* max-width: min(100%, 400px); */
+  margin: 0 auto;
+  width: max-content;
+  padding: 2rem;
+  border-radius: 6px;
+}
+
+@media screen and (max-width: 768px) {
+  .chart-container {
+    width: 100% !important;
+  }
+}
+
+.chart-container > canvas {
+  flex-shrink: 1;
+}
+
+.chart-title {
+  display: block;
+  margin: 0;
+  text-align: center;
+}
+
+.chart-lg {
+  height: 600px;
+}

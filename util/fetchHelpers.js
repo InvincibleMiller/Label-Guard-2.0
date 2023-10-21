@@ -1,3 +1,5 @@
+import Lo from "lodash";
+
 const Fetcher = {
   post: async (url, data = {}, headers = {}) => {
     // Default options are marked with *
@@ -22,6 +24,16 @@ const Fetcher = {
     });
 
     return response;
+  },
+  toQueryParams: (obj) => {
+    const characterArr = Lo.reduce(
+      obj,
+      (sum, value, key, list) => {
+        return sum + `${key}=${value}&`;
+      },
+      "?"
+    ).split("");
+    return characterArr.toSpliced(characterArr.length - 1, 1).join("");
   },
 };
 

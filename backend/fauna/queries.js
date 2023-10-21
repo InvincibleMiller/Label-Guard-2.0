@@ -439,6 +439,14 @@ async function getViolationPairs(location_id, from, to) {
   return violation_pairs;
 }
 
+async function getFindingReportsByDate(location_id, from, to) {
+  const query = fql`FindingReports.byDate(${location_id}, {from: ${from}, to: ${to}})`;
+
+  const { data: findingReports } = await client.query(query);
+
+  return findingReports;
+}
+
 module.exports = {
   // authentication
   registerAdmin,
@@ -467,6 +475,7 @@ module.exports = {
   deleteFindingReportDocument,
   getViolationPairsFromFindingDocument,
   getViolationPairs,
+  getFindingReportsByDate,
   getLocationSettings,
   getDefaultSettings,
   // forms
