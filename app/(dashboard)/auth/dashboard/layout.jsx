@@ -73,7 +73,7 @@ export default async function RootLayout({ children, params }) {
   return (
     <html lang="en">
       <body>
-        <header className="container-fluid shadow-sm mb-4 sticky-header p-0">
+        <header className="container-fluid shadow-sm mb-4 sticky-header">
           <div className="row">
             <div className="col bg-primary text-light">
               <div className="container-xl py-2">
@@ -140,7 +140,7 @@ export default async function RootLayout({ children, params }) {
             </div>
           </div>
         </header>
-        <div className="container-xl">
+        <div className="container-fluid">
           {/* <div
             className="alert alert-info alert-dismissible fade show"
             role="alert"
@@ -154,7 +154,7 @@ export default async function RootLayout({ children, params }) {
               aria-label="Close"
             ></button>
           </div> */}
-          {children}
+          <div className="container-xl">{children}</div>
         </div>
         <script
           src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"

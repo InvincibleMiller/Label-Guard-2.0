@@ -43,6 +43,15 @@ body {
   text-align: center;
 }
 
+.chart-header {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.chart-subheading {
+  color: gray;
+}
+
 .chart-lg {
   height: 600px;
 }

@@ -9,6 +9,8 @@ import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { DateInput, SubmitButton } from "@/components/FormFields";
 
+import HeatMapCalendar from "@/components/HeatMapCalendar";
+
 import {
   Chart as ChartJS,
   ArcElement,
@@ -200,6 +202,20 @@ export default function page() {
     );
   }, [reportData]);
 
+  // Heat map calendar data
+  const heatmapData = useMemo(() => {
+    if (!reportData.reportProfile) {
+      return [];
+    }
+
+    return Lo.map(reportData.weightedFindingsByDate, (value, key) => {
+      return {
+        date: key,
+        weight: Lo.reduce(value, (sum, value) => sum + value.weight, 0),
+      };
+    });
+  }, [reportData]);
+
   useEffect(() => {
     (async () => {
       const url = `${
@@ -249,10 +265,47 @@ export default function page() {
           </div>
         </div>
       </form>
-      <div className="row mb-4">
+      <div className="row mb-4 row-gap-3">
+        <div className="col-12 col-md-8">
+          <div className="chart-container">
+            <div className="chart-header">
+              <h4 className="chart-title">Finding Calendar</h4>
+            </div>
+            <HeatMapCalendar range={range} values={heatmapData} />
+          </div>
+        </div>
+        <div className="col-12 col-md-4">
+          <div className="chart-container">
+            <div className="chart-header">
+              <h4 className="chart-title">Overall Score</h4>
+              <p className="chart-subheading">(Lower is better)</p>
+            </div>
+            <p className="mb-0">
+              {`Over a period of ${
+                reportData?.reportProfile?.daysElapsed || "..."
+              } days, `}
+              <strong>
+                {`${
+                  reportData?.reportProfile?.findings +
+                    reportData?.reportProfile?.repeatFindings || "..."
+                } findings`}
+              </strong>
+              {" were discovered ("}
+              <strong>
+                {`${
+                  reportData?.reportProfile?.repeatFindings || "..."
+                } repeats`}
+              </strong>
+              {"), and the total points counted against the score add up to "}
+              <strong>{reportData?.reportProfile?.totalWeight}.</strong>
+            </p>
+          </div>
+        </div>
         <div className="col-12 col-md-6 col-lg-4">
           <div className="chart-container mb-4">
-            <h4 className="chart-title">Estimated Contributions</h4>
+            <div className="chart-header">
+              <h4 className="chart-title">Estimated Contributions</h4>
+            </div>
             {Lo.isEmpty(reportData) ? (
               <>
                 <SquareLoader />
@@ -280,7 +333,9 @@ export default function page() {
         </div>
         <div className="col-12 col-md-6 col-lg-4">
           <div className="chart-container mb-4">
-            <h4 className="chart-title">Daily Completion Rate</h4>
+            <div className="chart-header">
+              <h4 className="chart-title">Daily Completion Rate</h4>
+            </div>
             <Bar
               options={{
                 callbacks: {
@@ -330,7 +385,9 @@ export default function page() {
         </div>
         <div className="col-12 col-md-6 col-lg-4">
           <div className="chart-container mb-4">
-            <h4 className="chart-title">Repeat Ratio</h4>
+            <div className="chart-header">
+              <h4 className="chart-title">Repeat Ratio</h4>
+            </div>
             {Lo.isEmpty(reportData) ? (
               <>
                 <SquareLoader />

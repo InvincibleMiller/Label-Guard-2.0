@@ -91,7 +91,7 @@ const compileReport = async (req, res, next) => {
 
     // useful for finding the average frequency of
     // a specific finding
-    const daysElapsed = paddedEndMoment.diff(fromMoment, "days") - 1;
+    const daysElapsed = paddedEndMoment.diff(fromMoment, "days");
     const reportProfile = {
       totalWeight: 0,
       repeatFindings: 0,
