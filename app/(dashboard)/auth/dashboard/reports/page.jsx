@@ -186,6 +186,19 @@ export default function page() {
       ],
     };
   }, [reportData]);
+  const repeatRatio = useMemo(() => {
+    if (!reportData.reportProfile) {
+      return 0;
+    }
+
+    return Lo.round(
+      (reportData.reportProfile.repeatFindings /
+        (reportData.reportProfile.repeatFindings +
+          reportData.reportProfile.findings)) *
+        100,
+      2
+    );
+  }, [reportData]);
 
   useEffect(() => {
     (async () => {
@@ -333,6 +346,7 @@ export default function page() {
             This metric is indicative of the focus and awareness of the team in
             resolving longstanding, recurring issues.
           </p>
+          <p>{repeatRatio}% of findings are repeats.</p>
         </div>
       </div>
     </div>

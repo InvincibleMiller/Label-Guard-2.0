@@ -73,10 +73,10 @@ export default async function RootLayout({ children, params }) {
   return (
     <html lang="en">
       <body>
-        <header className="container-fluid shadow-sm mb-4 sticky-header">
+        <header className="container-fluid shadow-sm mb-4 sticky-header p-0">
           <div className="row">
             <div className="col bg-primary text-light">
-              <div className="container-xl py-2 px-0">
+              <div className="container-xl py-2">
                 <div className="row py-2">
                   <div className="col d-flex justify-content-between align-items-center">
                     <h4 className="fw-bold mb-0">Label Guard</h4>
@@ -85,53 +85,59 @@ export default async function RootLayout({ children, params }) {
                 </div>
               </div>
             </div>
-            <nav className="navbar bg-body-tertiary navbar-expand-lg">
-              <div className="container-xl justify-content-end">
-                <button
-                  className="navbar-toggler ml-auto"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#navbarToggle"
-                  aria-controls="navbarToggle"
-                  aria-expanded="false"
-                  aria-label="Toggle navigation"
-                >
-                  <span className="navbar-toggler-icon"></span>
-                </button>
-                <div
-                  className="mt-2 mt-lg-0 collapse navbar-collapse"
-                  id="navbarToggle"
-                >
-                  <ul className="navbar-nav nav-pills nav-justified gap-1 m-auto fw-semibold">
-                    <li className="nav-item">
-                      <NavLink className="nav-link" href="/auth/dashboard/">
-                        Dashboard
-                      </NavLink>
-                    </li>
-                    <li className="nav-item">
-                      <NavLink href="/auth/dashboard/reports/">Reports</NavLink>
-                    </li>
-                    <li className="nav-item">
-                      <NavLink href="/auth/dashboard/violations/">
-                        Violations
-                      </NavLink>
-                    </li>
-                    <li className="nav-item">
-                      <NavLink href="/auth/dashboard/inventory/">
-                        Inventory
-                      </NavLink>
-                    </li>
-                    <li className="nav-item">
-                      <NavLink href="/auth/dashboard/shifts/">Shifts</NavLink>
-                    </li>
-                    <li className="nav-item">
-                      <NavLink href="/auth/dashboard/forms/">Forms</NavLink>
-                    </li>
-                  </ul>
-                  <NavBarHighlighter />
+          </div>
+          <div className="row">
+            <div className="container-xl">
+              <nav className="navbar bg-body-tertiary navbar-expand-lg">
+                <div className="container-xl justify-content-end">
+                  <button
+                    className="navbar-toggler ml-auto"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarToggle"
+                    aria-controls="navbarToggle"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                  >
+                    <span className="navbar-toggler-icon"></span>
+                  </button>
+                  <div
+                    className="mt-2 mt-lg-0 collapse navbar-collapse"
+                    id="navbarToggle"
+                  >
+                    <ul className="navbar-nav nav-pills nav-justified gap-1 m-auto fw-semibold">
+                      <li className="nav-item">
+                        <NavLink className="nav-link" href="/auth/dashboard/">
+                          Dashboard
+                        </NavLink>
+                      </li>
+                      <li className="nav-item">
+                        <NavLink href="/auth/dashboard/reports/">
+                          Reports
+                        </NavLink>
+                      </li>
+                      <li className="nav-item">
+                        <NavLink href="/auth/dashboard/violations/">
+                          Violations
+                        </NavLink>
+                      </li>
+                      <li className="nav-item">
+                        <NavLink href="/auth/dashboard/inventory/">
+                          Inventory
+                        </NavLink>
+                      </li>
+                      <li className="nav-item">
+                        <NavLink href="/auth/dashboard/shifts/">Shifts</NavLink>
+                      </li>
+                      <li className="nav-item">
+                        <NavLink href="/auth/dashboard/forms/">Forms</NavLink>
+                      </li>
+                    </ul>
+                    <NavBarHighlighter />
+                  </div>
                 </div>
-              </div>
-            </nav>
+              </nav>
+            </div>
           </div>
         </header>
         <div className="container-xl">
