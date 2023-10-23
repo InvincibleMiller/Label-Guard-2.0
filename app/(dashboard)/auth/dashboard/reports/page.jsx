@@ -18,8 +18,9 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { Pie } from "react-chartjs-2";
-import { Bar } from "react-chartjs-2";
+import { Pie, Bar, Doughnut } from "react-chartjs-2";
+
+import SquareLoader from "@/components/SquareLoader";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
@@ -44,57 +45,98 @@ export default function page() {
     return { from, to };
   });
 
+  const chartColors = [
+    "rgb(255, 99, 132)",
+    "rgb(54, 162, 235)",
+    "rgb(255, 206, 86)",
+    "rgb(75, 192, 192)",
+    "rgb(153, 102, 255)",
+    "rgb(255, 159, 64)",
+  ];
+  const datasetGenerics = {
+    backgroundColor: chartColors,
+    borderColor: ["#fff"],
+    borderWidth: 2,
+  };
+
   const [reportData, setReportData] = useState({});
+
+  //
+  // Here we compile all the data fetched from the backend into
+  // a format useable by ChartJS' API, and also for the blurbs.
+  //
+
+  // Estimated finding stats
   const shiftPieData = useMemo(() => {
+    if (!reportData.reportProfile) {
+      return {
+        labels: [],
+        datasets: [],
+      };
+    }
+
     return {
       labels: Lo.keys(reportData.shiftProfiles),
       datasets: [
         {
-          label: " Occurrences",
-          data: Lo.map(reportData.shiftProfiles, ({ totalWeight }, key) => {
-            const stats = reportData.findingReportsPerShift[key];
-            if (!stats) {
-              return 0;
-            }
+          label: " Findings",
+          data: Lo.map(
+            reportData.shiftProfiles,
+            ({ occurrences, repeatOccurrences }, key) => {
+              const stats = reportData.findingReportsPerShift[key];
+              if (!stats) {
+                return 0;
+              }
 
-            return Lo.round(totalWeight / stats.daily, 1);
-          }),
-          backgroundColor: [
-            "rgb(255, 99, 132)",
-            "rgb(54, 162, 235)",
-            "rgb(255, 206, 86)",
-            "rgb(75, 192, 192)",
-            "rgb(153, 102, 255)",
-            "rgb(255, 159, 64)",
-          ],
-          borderColor: ["#fff"],
-          borderWidth: 2,
+              return Lo.round(
+                (occurrences + repeatOccurrences) / stats.daily,
+                2
+              );
+            }
+          ),
+          ...datasetGenerics,
         },
       ],
     };
   }, [reportData]);
   const shiftContributionStats = useMemo(() => {
-    return Lo.map(reportData.shiftProfiles, ({ totalWeight }, key) => {
-      const stats = reportData.findingReportsPerShift[key];
-      if (!stats) {
-        return null;
-      }
+    return Lo.map(
+      reportData.shiftProfiles,
+      ({ occurrences, repeatOccurrences }, key) => {
+        const stats = reportData.findingReportsPerShift[key];
+        if (!stats) {
+          return {
+            name: key,
+            contribution: 0,
+          };
+        }
 
-      return {
-        name: key,
-        contribution: Lo.round(totalWeight / stats.daily, 1),
-      };
-    })
-      .filter((o) => o !== null)
-      .sort((a, b) => b.contribution - a.contribution);
+        return {
+          name: key,
+          contribution: Lo.round(
+            (occurrences + repeatOccurrences) / stats.daily,
+            2
+          ),
+        };
+      }
+    ).sort((a, b) => b.contribution - a.contribution);
   }, [reportData]);
 
+  // Rate of completion of minimum required reports
   const shiftCompletionData = useMemo(() => {
+    if (!reportData.reportProfile) {
+      return {
+        labels: [],
+        datasets: [],
+      };
+    }
+
     return {
       labels: Lo.keys(reportData.shiftProfiles),
       datasets: [
         {
-          label: "Daily Completion Rate",
+          yAxisID: "yAxis",
+          label: " Daily Completion Rate",
           data: Lo.map(reportData.shiftProfiles, ({ value }, key) => {
             const calc = reportData.findingReportsPerShift[key];
             if (!calc) {
@@ -103,16 +145,7 @@ export default function page() {
 
             return calc.daily * 100;
           }),
-          backgroundColor: [
-            "rgb(255, 99, 132)",
-            "rgb(255, 159, 64)",
-            "rgb(255, 205, 86)",
-            "rgb(75, 192, 192)",
-            "rgb(54, 162, 235)",
-            "rgb(153, 102, 255)",
-            "rgb(201, 203, 207)",
-          ],
-          borderWidth: 1,
+          ...datasetGenerics,
         },
       ],
     };
@@ -129,6 +162,30 @@ export default function page() {
       }).sort((a, b) => b.score - a.score),
     [reportData]
   );
+
+  // Repeats vs regular findings
+  const repeatComparisonData = useMemo(() => {
+    if (!reportData.reportProfile) {
+      return {
+        labels: [],
+        datasets: [],
+      };
+    }
+
+    return {
+      labels: ["Repeats", "Non-Repeats"],
+      datasets: [
+        {
+          data: [
+            reportData.reportProfile.repeatFindings,
+            reportData.reportProfile.findings,
+          ],
+          ...datasetGenerics,
+          backgroundColor: ["rgb(255, 99, 132)", "#e3e3e3"],
+        },
+      ],
+    };
+  }, [reportData]);
 
   useEffect(() => {
     (async () => {
@@ -182,10 +239,24 @@ export default function page() {
       <div className="row mb-4">
         <div className="col-12 col-md-6 col-lg-4">
           <div className="chart-container mb-4">
-            <h4 className="chart-title">Contribution By Shift</h4>
-            <Pie data={shiftPieData} title="Contribution by Shift" />
+            <h4 className="chart-title">Estimated Contributions</h4>
+            {Lo.isEmpty(reportData) ? (
+              <>
+                <SquareLoader />
+              </>
+            ) : (
+              <>
+                <Doughnut data={shiftPieData} />
+              </>
+            )}
           </div>
-          <p className="lead">The top contributors to score (by trend)</p>
+          <p className="lead">
+            The top contributors to the overall score (by trend).
+          </p>
+          <p>
+            Estimating the largest growth opportunities by shift by factoring in
+            missing reports.
+          </p>
           <ol>
             {shiftContributionStats.map((stats, i) => (
               <li key={i}>
@@ -197,18 +268,71 @@ export default function page() {
         <div className="col-12 col-md-6 col-lg-4">
           <div className="chart-container mb-4">
             <h4 className="chart-title">Daily Completion Rate</h4>
-            <Bar data={shiftCompletionData} title="Contribution by Shift" />
+            <Bar
+              options={{
+                callbacks: {
+                  label: (tooltipItem, data) => {
+                    //get the concerned dataset
+                    var dataset = data.datasets[tooltipItem.datasetIndex];
+                    //get the current items value
+                    var currentValue = dataset.data[tooltipItem.index];
+
+                    // console.log(currentValue);
+
+                    return currentValue + "%";
+                  },
+                },
+                scales: {
+                  yAxis: {
+                    ticks: {
+                      min: 0,
+                      max: 100,
+                      callback: (value) => value + "%",
+                    },
+                    scaleLabel: {
+                      display: true,
+                      labelString: "Percentage",
+                    },
+                  },
+                },
+              }}
+              data={shiftCompletionData}
+            />
           </div>
           <p className="lead">
-            Rate of completion of minimum daily finding reports (by shift)
+            Shifts completing the required minimum of finding reports.
+          </p>
+          <p>
+            Missed finding reports result in inaccurate scoring. Strive to
+            complete all minimum reports to raise accuracy.
           </p>
           <ol>
             {shiftCompletionStats.map((stats, i) => (
               <li key={i}>
-                {stats.name}: {Lo.round(stats.score, 2)}% points
+                {stats.name}: {Lo.round(stats.score, 2)}% (missed{" "}
+                {Lo.round(100 - stats.score, 2)}%)
               </li>
             ))}
           </ol>
+        </div>
+        <div className="col-12 col-md-6 col-lg-4">
+          <div className="chart-container mb-4">
+            <h4 className="chart-title">Repeat Ratio</h4>
+            {Lo.isEmpty(reportData) ? (
+              <>
+                <SquareLoader />
+              </>
+            ) : (
+              <>
+                <Doughnut data={repeatComparisonData} />
+              </>
+            )}
+          </div>
+          <p className="lead">The portion of findings classified as repeats.</p>
+          <p>
+            This metric is indicative of the focus and awareness of the team in
+            resolving longstanding, recurring issues.
+          </p>
         </div>
       </div>
     </div>

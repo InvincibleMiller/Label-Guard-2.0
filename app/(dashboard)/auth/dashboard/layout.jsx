@@ -135,7 +135,7 @@ export default async function RootLayout({ children, params }) {
           </div>
         </header>
         <div className="container-xl">
-          <div
+          {/* <div
             className="alert alert-info alert-dismissible fade show"
             role="alert"
           >
@@ -147,7 +147,7 @@ export default async function RootLayout({ children, params }) {
               data-bs-dismiss="alert"
               aria-label="Close"
             ></button>
-          </div>
+          </div> */}
           {children}
         </div>
         <script
