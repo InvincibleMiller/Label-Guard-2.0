@@ -51,13 +51,15 @@ function page({ params }) {
     // avoid modifying immutable state by mistake
     // because of JavaScript references
     const findingsClone = Lo.cloneDeep(findingReport.findings);
+    const updatedFindings = Lo.keyBy(data.findings, "id");
 
     findingsClone
       .filter((finding) => !deletedFindings.includes(finding.id))
       .forEach((finding) => {
         const id = new String(finding.id);
         delete finding.id;
-        formattedFindings[id] = finding;
+        formattedFindings[id] = { ...finding, ...updatedFindings[id] };
+        delete formattedFindings[id].id;
       });
 
     const payload = {
@@ -66,6 +68,10 @@ function page({ params }) {
       deletedFindings,
       documentID,
     };
+
+    // TODO ­- remove dev ...
+    console.log(formattedFindings);
+    return;
 
     const result = await Fetcher.post(
       `${process.env.NEXT_PUBLIC_URL}api/auth/update-finding-report`,
