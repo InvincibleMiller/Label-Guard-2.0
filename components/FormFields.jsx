@@ -203,6 +203,7 @@ export function DateInput({
   form,
   options = {},
   defaultValue = undefined,
+  utc = false,
 }) {
   const ref = useRef();
   const errors = form.formState.errors;
@@ -213,7 +214,7 @@ export function DateInput({
     ref.current?.classList.remove(errorClass);
   }
 
-  const date = moment(defaultValue || undefined);
+  const date = utc ? moment.utc(defaultValue) : moment(defaultValue);
 
   const getDateString = () => {
     return date.format("YYYY-MM-DD");

@@ -123,6 +123,7 @@ function page({ params }) {
             id={"date"}
             title={"Submission Date"}
             defaultValue={findingReport.date.isoString}
+            utc
           />
         )}
         {findingReport?.shift_id && (
