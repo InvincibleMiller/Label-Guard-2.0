@@ -194,6 +194,29 @@ const compileReport = async (req, res, next) => {
       date.format("YYYY-MM-DD")
     );
 
+    const weightedByDate = Array(daysElapsed)
+      .fill(0)
+      .map((_, i) => {
+        const m = moment(fromMoment);
+        m.add(i, "days");
+
+        const momentString = m.format("YYYY-MM-DD");
+
+        const weightedDay = {
+          date: momentString,
+          weight: 0,
+        };
+
+        if (weightedFindingsByDate[momentString]) {
+          weightedDay.weight = weightedFindingsByDate[momentString].reduce(
+            (sum, n) => sum + n.weight,
+            0
+          );
+        }
+
+        return weightedDay;
+      });
+
     // group findings by violation
     const weightedFindingsByViolation = Lo.groupBy(
       weightedFindings,
@@ -202,6 +225,7 @@ const compileReport = async (req, res, next) => {
 
     res.status(200).json({
       findingProfiles,
+      weightedByDate,
       productProfiles,
       shiftProfiles,
       findingReportsPerShift,

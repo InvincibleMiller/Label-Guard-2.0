@@ -9,7 +9,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { DateInput, SubmitButton } from "@/components/FormFields";
 
-import HeatMapCalendar from "@/components/HeatMapCalendar";
+import { GradientChart } from "@/components/Charts";
 
 import {
   Chart as ChartJS,
@@ -17,6 +17,8 @@ import {
   CategoryScale,
   LinearScale,
   BarElement,
+  PointElement,
+  LineElement,
   Tooltip,
   Legend,
 } from "chart.js";
@@ -26,6 +28,14 @@ import SquareLoader from "@/components/SquareLoader";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend
+);
 
 export default function page() {
   const buildReportForm = useForm();
@@ -54,6 +64,12 @@ export default function page() {
     "rgb(75, 192, 192)",
     "rgb(153, 102, 255)",
     "rgb(255, 159, 64)",
+  ];
+  const calendarGradient = [
+    "rgb(54, 162, 235)",
+    "rgb(75, 192, 192)",
+    "rgb(153, 102, 255)",
+    "rgb(255, 99, 132)",
   ];
   const datasetGenerics = {
     backgroundColor: chartColors,
@@ -203,17 +219,23 @@ export default function page() {
   }, [reportData]);
 
   // Heat map calendar data
-  const heatmapData = useMemo(() => {
+  const calendarData = useMemo(() => {
     if (!reportData.reportProfile) {
-      return [];
+      return {
+        labels: [],
+        datasets: [],
+      };
     }
 
-    return Lo.map(reportData.weightedFindingsByDate, (value, key) => {
-      return {
-        date: key,
-        weight: Lo.reduce(value, (sum, value) => sum + value.weight, 0),
-      };
-    });
+    return {
+      labels: Lo.map(reportData.weightedByDate, ({ date }) => date),
+      datasets: [
+        {
+          label: "points",
+          data: Lo.map(reportData.weightedByDate, ({ weight }) => weight),
+        },
+      ],
+    };
   }, [reportData]);
 
   useEffect(() => {
@@ -265,13 +287,13 @@ export default function page() {
           </div>
         </div>
       </form>
-      <div className="row mb-4 row-gap-3">
+      <div className="row mb-4 row-gap-4">
         <div className="col-12 col-md-8">
           <div className="chart-container">
             <div className="chart-header">
               <h4 className="chart-title">Finding Calendar</h4>
             </div>
-            <HeatMapCalendar range={range} values={heatmapData} />
+            <GradientChart data={calendarData} colors={calendarGradient} />
           </div>
         </div>
         <div className="col-12 col-md-4">
