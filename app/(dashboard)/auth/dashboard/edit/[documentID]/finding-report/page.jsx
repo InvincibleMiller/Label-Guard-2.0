@@ -16,6 +16,8 @@ import {
   SubmitButton,
 } from "@/components/FormFields";
 
+import moment from "moment";
+
 import { Fetcher } from "@/util/fetchHelpers";
 
 import { Card } from "@/components/Bootstrap";
@@ -53,25 +55,28 @@ function page({ params }) {
     const findingsClone = Lo.cloneDeep(findingReport.findings);
     const updatedFindings = Lo.keyBy(data.findings, "id");
 
+    const newDateMoment = moment(data.date).toISOString();
+
     findingsClone
       .filter((finding) => !deletedFindings.includes(finding.id))
       .forEach((finding) => {
         const id = new String(finding.id);
         delete finding.id;
-        formattedFindings[id] = { ...finding, ...updatedFindings[id] };
+        formattedFindings[id] = {
+          ...finding,
+          ...updatedFindings[id],
+          found_on: newDateMoment,
+        };
         delete formattedFindings[id].id;
       });
 
     const payload = {
       ...data,
+      date: newDateMoment,
       findings: formattedFindings,
       deletedFindings,
       documentID,
     };
-
-    // TODO ­- remove dev ...
-    console.log(formattedFindings);
-    return;
 
     const result = await Fetcher.post(
       `${process.env.NEXT_PUBLIC_URL}api/auth/update-finding-report`,
@@ -123,7 +128,7 @@ function page({ params }) {
             id={"date"}
             title={"Submission Date"}
             defaultValue={findingReport.date.isoString}
-            utc
+            // utc
           />
         )}
         {findingReport?.shift_id && (

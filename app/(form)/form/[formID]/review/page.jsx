@@ -48,7 +48,7 @@ function page({ params }) {
     const payload = {
       fullName: submissionFullName,
       shift: submissionShift,
-      date: submissionDate,
+      date: moment(submissionDate).toISOString(),
       findings: submissionFindings,
       location: locationDocument,
       form: formDocument,
