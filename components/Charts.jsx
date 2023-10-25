@@ -1,24 +1,7 @@
 import { useRef, useEffect, useState } from "react";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend,
-} from "chart.js";
+import { Chart as ChartJS } from "chart.js/auto";
 import { Chart } from "react-chartjs-2";
 import { random } from "faker";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend
-);
 
 export function GradientChart({ data, colors }) {
   const chartRef = useRef(null);
