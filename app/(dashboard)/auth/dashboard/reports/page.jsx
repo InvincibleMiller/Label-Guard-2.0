@@ -196,7 +196,7 @@ export default function page() {
         {
           data: [
             reportData.reportProfile.repeatFindings,
-            reportData.reportProfile.findings,
+            reportData.reportProfile.nonRepeatFindings,
           ],
           ...datasetGenerics,
           backgroundColor: ["rgb(255, 99, 132)", "#e3e3e3"],
@@ -211,8 +211,7 @@ export default function page() {
 
     return Lo.round(
       (reportData.reportProfile.repeatFindings /
-        (reportData.reportProfile.repeatFindings +
-          reportData.reportProfile.findings)) *
+        reportData.reportProfile.findings) *
         100,
       2
     );
@@ -242,7 +241,10 @@ export default function page() {
     (async () => {
       const url = `${
         process.env.NEXT_PUBLIC_URL
-      }api/auth/get-full-report${Fetcher.toQueryParams(range)}`;
+      }api/auth/get-full-report${Fetcher.toQueryParams({
+        ...range,
+        utcOffset: moment().utcOffset(),
+      })}`;
 
       const result = await Fetcher.get(url);
 
@@ -253,7 +255,10 @@ export default function page() {
   }, [range]);
 
   function buildReport(data) {
-    setRange(data);
+    setRange({
+      from: moment(data.from).toISOString(),
+      to: moment(data.to).toISOString(),
+    });
   }
 
   return (
@@ -307,10 +312,7 @@ export default function page() {
                 reportData?.reportProfile?.daysElapsed || "..."
               } days, `}
               <strong>
-                {`${
-                  reportData?.reportProfile?.findings +
-                    reportData?.reportProfile?.repeatFindings || "..."
-                } findings`}
+                {`${reportData?.reportProfile?.findings || "..."} findings`}
               </strong>
               {" were discovered ("}
               <strong>

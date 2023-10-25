@@ -15,7 +15,7 @@ const compileReport = async (req, res, next) => {
     // expects start and end date from query params
     // dates are expected to be formatted as YYYY-MM-DD
     // const { id: userID } = req.userDocument;
-    let { from, to } = req.query;
+    let { from, to, utcOffset } = req.query;
     const locationID = req.cookies[process.env.LOCATION_ID_COOKIE];
 
     // make sure client input exists
@@ -72,8 +72,7 @@ const compileReport = async (req, res, next) => {
 
     const { data: findingReports } = await getFindingReportsByDate(
       locationID,
-      // important to use from without padding to avoid grabbing too many reports
-      fromDate,
+      paddedStart,
       paddedEnd
     );
 
@@ -87,7 +86,12 @@ const compileReport = async (req, res, next) => {
 
     const hashVP = ({ violation_id, product_id }) =>
       `${violation_id},${product_id}`;
-    const foundOnRecord = {};
+
+    // used to record specific findings
+    const violationRecord = {};
+
+    // used to determine the time elapsed between violations
+    const specificFindingRecord = {};
 
     // useful for finding the average frequency of
     // a specific finding
@@ -96,6 +100,7 @@ const compileReport = async (req, res, next) => {
       totalWeight: 0,
       repeatFindings: 0,
       findings: 0,
+      nonRepeatFindings: 0,
       daysElapsed: Lo.round(daysElapsed, 2),
       weeksElapsed: Lo.round(daysElapsed / 7, 2),
     };
@@ -135,25 +140,42 @@ const compileReport = async (req, res, next) => {
           repeat: false,
           violation: violationDoc.name,
           weight: violationDoc.weight,
+          specificRepeat: false,
         };
 
-        // check if the finding is a repeat and adjust the weight accordingly
+        // check if the finding is a repeat by violation and adjust the weight accordingly
         if (
-          foundOnRecord[hash] &&
-          maximum_repeat_threshold > found_on.valueOf() - foundOnRecord[hash]
+          violationRecord[violation_id] &&
+          maximum_repeat_threshold >
+            found_on.valueOf() - violationRecord[violation_id]
         ) {
           weightedFinding.repeat = true;
           weightedFinding.weight = violationDoc.repeat_weight;
         }
+        // do that same thing but consider violation & product
+        if (
+          specificFindingRecord[hash] &&
+          maximum_repeat_threshold >
+            found_on.valueOf() - specificFindingRecord[hash]
+        ) {
+          weightedFinding.specificRepeat = true;
+        }
+
+        // effectively save the most recent occurrence date
+        // of this violation (this is how we find repeats)
+        violationRecord[violation_id] = found_on.valueOf();
+        // save a record of specific repeats too (by violation & product)
+        specificFindingRecord[hash] = found_on.valueOf();
 
         // before continuing (updating the report)
         // make sure that this finding isn't outside of the real range
-        if (found_on.valueOf() < fromDate.valueOf()) {
+        if (found_on.valueOf() < fromMoment.valueOf()) {
           return null;
         }
 
         reportProfile.findings += 1;
         reportProfile.repeatFindings += weightedFinding.repeat ? 1 : 0;
+        reportProfile.nonRepeatFindings += weightedFinding.repeat ? 0 : 1;
         reportProfile.totalWeight += weightedFinding.weight;
 
         const updateProfile = (profile, key) => {
@@ -180,10 +202,6 @@ const compileReport = async (req, res, next) => {
         updateProfile(productProfiles, productsById[product_id].name);
         updateProfile(shiftProfiles, shiftsById[shift_id].name);
         updateProfile(violationProfiles, violationsById[violation_id].name);
-
-        // effectively save the most recent date
-        // of this finding type
-        foundOnRecord[hash] = found_on.valueOf();
 
         return weightedFinding;
       })
