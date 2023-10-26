@@ -13,7 +13,12 @@ import { NavLink } from "@/components/NavBar";
 import { cookies } from "next/headers";
 import { decrypt } from "@/util/crypto";
 import { getStripe } from "@/util/stripe";
-import { getLocationDocumentById } from "@/backend/fauna/queries";
+import {
+  getLocationDocumentById,
+  getAllLocationsForUser,
+} from "@/backend/fauna/queries";
+
+import LocationSwitcher from "@/components/LocationSwitcher";
 
 export const metadata = {
   title: {
@@ -27,6 +32,7 @@ export default async function RootLayout({ children, params }) {
   const { get: getCookie } = cookies();
 
   const { value: locationId } = getCookie(process.env.LOCATION_ID_COOKIE);
+  const { value: userID } = getCookie(process.env.USER_ID_COOKIE);
 
   if (!locationId || locationId == undefined) {
     throw new Error("No Location Id!");
@@ -38,8 +44,10 @@ export default async function RootLayout({ children, params }) {
 
   const { data: locationDoc } = await getLocationDocumentById(locationId);
 
+  const { data: allLocations } = await getAllLocationsForUser(userID);
+
   if (!locationDoc || locationDoc == undefined) {
-    // do something
+    // TODO — Throw an error about null locations
   }
 
   // get the customer key and decrypt it
@@ -80,15 +88,21 @@ export default async function RootLayout({ children, params }) {
                 <div className="row py-2">
                   <div className="col d-flex justify-content-between align-items-center">
                     <h4 className="fw-bold mb-0">Label Guard</h4>
-                    <LogoutButton className={"btn btn-outline-light"} />
+                    <div className="d-flex align-items-center gap-4">
+                      <LocationSwitcher
+                        locationDoc={locationDoc}
+                        locations={allLocations}
+                      />
+                      <LogoutButton className={"btn btn-outline-light"} />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
           <div className="row">
-            <div className="container-xl">
-              <nav className="navbar bg-body-tertiary navbar-expand-lg">
+            <div className="container-xl bg-body-tertiary">
+              <nav className="navbar navbar-expand-lg">
                 <div className="container-xl justify-content-end">
                   <button
                     className="navbar-toggler ml-auto"
@@ -141,7 +155,7 @@ export default async function RootLayout({ children, params }) {
           </div>
         </header>
         <div className="container-fluid">
-          {/* <div
+          <div
             className="alert alert-info alert-dismissible fade show"
             role="alert"
           >
@@ -153,7 +167,7 @@ export default async function RootLayout({ children, params }) {
               data-bs-dismiss="alert"
               aria-label="Close"
             ></button>
-          </div> */}
+          </div>
           <div className="container-xl">{children}</div>
         </div>
         <script
