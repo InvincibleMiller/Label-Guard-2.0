@@ -101,8 +101,8 @@ export default async function RootLayout({ children, params }) {
             </div>
           </div>
           <div className="row">
-            <div className="container-xl">
-              <nav className="navbar bg-body-tertiary navbar-expand-lg">
+            <div className="container-xl bg-body-tertiary">
+              <nav className="navbar navbar-expand-lg">
                 <div className="container-xl justify-content-end">
                   <button
                     className="navbar-toggler ml-auto"
