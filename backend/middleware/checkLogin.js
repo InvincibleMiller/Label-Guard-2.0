@@ -28,6 +28,8 @@ const checkLogin = (redirectPath) => async (req, res, next) => {
     req.faunaClient = getFaunaClient(userToken);
     req.userDocument = await getUserDoc(req.faunaClient);
 
+    res.cookie(process.env.USER_ID_COOKIE, req.userDocument.id);
+
     // validate that the user owns the location
     // if it's included in the query
 

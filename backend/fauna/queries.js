@@ -121,6 +121,14 @@ async function getDefaultLocation(user_id) {
   }
 }
 
+async function getAllLocationsForUser(user_id) {
+  const query = fql`Locations.byAdminId(${user_id}) {id, name}`;
+
+  const { data: locations } = await client.query(query);
+
+  return locations;
+}
+
 async function locationBelongsToUser(user_id, location_id) {
   if (user_id == undefined || location_id == undefined) {
     return { data: false };
@@ -458,6 +466,7 @@ module.exports = {
   userHasNoLocations,
   getDefaultLocation,
   locationBelongsToUser,
+  getAllLocationsForUser,
   // dashboard CRUD
   getDocument,
   updateDocument,

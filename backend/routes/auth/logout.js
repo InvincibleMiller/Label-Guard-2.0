@@ -7,8 +7,10 @@ const logout = {
       // delete the token on Fauna DB
       const faunaLogout_result = await faunaLogout(req.faunaClient);
 
-      // clear the token cookie for the user
+      // clear all the token cookie for the user
       res.clearCookie(process.env.TOKEN_COOKIE);
+      res.clearCookie(process.env.LOCATION_ID_COOKIE);
+      res.clearCookie(process.env.USER_ID_COOKIE);
 
       // redirect to home
       res.redirect(303, "/");

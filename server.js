@@ -47,6 +47,8 @@ const {
   editFindingReport,
 } = require("./backend/routes/auth/findingReport");
 
+const getAllLocations = require("./backend/routes/auth/getAllLocations.js");
+
 const submitFindingReport = require("./backend/routes/form/submitFindingReport");
 
 const compileReport = require("./backend/routes/auth/compileReport");
@@ -95,6 +97,7 @@ app.prepare().then(() => {
 
   // parsing middleware
   server.use(bodyParser.json());
+  server.use(bodyParser.urlencoded());
   server.use(cookieParser(process.env.COOKIE_PARSER_SECRET));
 
   // useful middleware during development
@@ -187,6 +190,27 @@ app.prepare().then(() => {
 
   // get the compiled report
   server.get("/api/auth/get-full-report", compileReport);
+
+  // get all the locations for the user location selector
+  server.get("/api/auth/get-all-locations", getAllLocations);
+
+  server.post("/api/auth/change-location", (req, res, next) => {
+    try {
+      const { locationID } = req.body;
+
+      if (locationID === undefined) {
+        res.status(422);
+        throw new Error("locationID expected in request");
+      }
+
+      res.cookie(process.env.LOCATION_ID_COOKIE, locationID);
+
+      res.redirect("/auth/dashboard");
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  });
 
   // redirecting all requests to Next.js
   server.use("/auth/", checkLogin("/login"));
