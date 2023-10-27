@@ -9,6 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@portabletext/react": "^3.0.11",
+    "@sanity/client": "^6.7.0",
+    "@sanity/image-url": "^1.0.2",
+    "@sanity/vision": "^3.18.1",
     "body-parser": "^1.20.2",
     "bootstrap": "^5.3.1",
     "chart.js": "^4.4.0",
@@ -22,12 +26,15 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "next": "13.4.19",
+    "next-sanity": "^5.5.8",
     "nodemon": "^3.0.1",
     "react": "18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.46.1",
+    "sanity": "^3.18.1",
     "stripe": "^13.5.0",
+    "styled-components": "5.2",
     "underscore.string": "^3.3.6",
     "ws": "^8.14.2",
     "zustand": "^4.4.1"
