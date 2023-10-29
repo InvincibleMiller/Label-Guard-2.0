@@ -2,12 +2,15 @@
 import "bootstrap/dist/css/bootstrap.css";
 // dashboard styling
 import "./dashboard.css";
+import "@/app/global.css";
 
 // component imports
 import Link from "next/link";
 import NavBarHighlighter from "@/components/NavBarHighlighter";
 import LogoutButton from "@/components/LogoutButton";
 import { NavLink } from "@/components/NavBar";
+
+import { RxHamburgerMenu } from "react-icons/rx";
 
 // user validation imports
 import { cookies } from "next/headers";
@@ -87,14 +90,28 @@ export default async function RootLayout({ children, params }) {
               <div className="container-xl py-2">
                 <div className="row py-2">
                   <div className="col d-flex justify-content-between align-items-center">
-                    <h4 className="fw-bold mb-0">Label Guard</h4>
-                    <div className="d-flex align-items-center gap-4">
+                    <a className="logo-link" href="/">
+                      Label Guard
+                    </a>
+                    {/* Mobile Responsive */}
+                    <div className="d-none d-md-flex align-items-center gap-4">
                       <LocationSwitcher
                         locationDoc={locationDoc}
                         locations={allLocations}
                       />
                       <LogoutButton className={"btn btn-outline-light"} />
                     </div>
+                    <button
+                      className="navbar-toggler d-md-none"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#navbarToggle"
+                      aria-controls="navbarToggle"
+                      aria-expanded="false"
+                      aria-label="Toggle navigation"
+                    >
+                      <RxHamburgerMenu className="h4 m-0" />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -102,21 +119,10 @@ export default async function RootLayout({ children, params }) {
           </div>
           <div className="row">
             <div className="container-xl bg-body-tertiary">
-              <nav className="navbar navbar-expand-lg">
+              <nav className="navbar navbar-expand-md p-0">
                 <div className="container-xl justify-content-end">
-                  <button
-                    className="navbar-toggler ml-auto"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarToggle"
-                    aria-controls="navbarToggle"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation"
-                  >
-                    <span className="navbar-toggler-icon"></span>
-                  </button>
                   <div
-                    className="mt-2 mt-lg-0 collapse navbar-collapse"
+                    className="collapse navbar-collapse p-2"
                     id="navbarToggle"
                   >
                     <ul className="navbar-nav nav-pills nav-justified gap-1 m-auto fw-semibold">
@@ -146,6 +152,13 @@ export default async function RootLayout({ children, params }) {
                       <li className="nav-item">
                         <NavLink href="/auth/dashboard/forms/">Forms</NavLink>
                       </li>
+                      <div className="d-grid gap-2 d-md-none">
+                        <LocationSwitcher
+                          locationDoc={locationDoc}
+                          locations={allLocations}
+                        />
+                        <LogoutButton className={"btn btn-secondary"} />
+                      </div>
                     </ul>
                     <NavBarHighlighter />
                   </div>
@@ -155,7 +168,7 @@ export default async function RootLayout({ children, params }) {
           </div>
         </header>
         <div className="container-fluid">
-          <div
+          {/* <div
             className="alert alert-info alert-dismissible fade show"
             role="alert"
           >
@@ -167,7 +180,7 @@ export default async function RootLayout({ children, params }) {
               data-bs-dismiss="alert"
               aria-label="Close"
             ></button>
-          </div>
+          </div> */}
           <div className="container-xl">{children}</div>
         </div>
         <script

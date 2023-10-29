@@ -1,4 +1,6 @@
-require("dotenv-flow").config();
+require("dotenv-flow").config({
+  
+});
 const express = require("express");
 const http = require("http");
 const next = require("next");

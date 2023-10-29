@@ -1,20 +1,20 @@
 function LocationSwitcher({ locationDoc, locations }) {
   return (
-    <div class="dropdown">
+    <div className="dropdown" style={{ display: "contents" }}>
       <button
-        class="btn btn-light dropdown-toggle"
+        className="btn btn-light dropdown-toggle"
         type="button"
         data-bs-toggle="dropdown"
         aria-expanded="false"
       >
         {locationDoc?.name}
       </button>
-      <ul class="dropdown-menu">
+      <ul className="dropdown-menu">
         {locations.map(({ id, name }) => (
           <li>
             <form action="/api/auth/change-location" method="post">
               <div className="d-none">
-                <input type="text" name="locationID" value={id} />
+                <input readOnly type="text" name="locationID" value={id} />
               </div>
               <button type="submit" className="dropdown-item">
                 {name}
@@ -23,7 +23,7 @@ function LocationSwitcher({ locationDoc, locations }) {
           </li>
         ))}
         <li>
-          <hr class="dropdown-divider" />
+          <hr className="dropdown-divider" />
         </li>
         <li>
           <div className="dropdown-item d-grid">
