@@ -1,7 +1,8 @@
 // add bootstrap css
 import "bootstrap/dist/css/bootstrap.css";
 // global styling
-import "./globals.css";
+import "./business.css";
+import "@/app/global.css";
 
 // google fonts
 import { Inter } from "next/font/google";

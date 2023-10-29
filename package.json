@@ -32,6 +32,7 @@
     "react-chartjs-2": "^5.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.46.1",
+    "react-icons": "^4.11.0",
     "sanity": "^3.18.1",
     "stripe": "^13.5.0",
     "styled-components": "5.2",
@@ -41,7 +42,8 @@
   },
   "nodemonConfig": {
     "ignore": [
-      "./app/"
+      "./app/",
+      "./sanity/"
     ],
     "delay": 1
   }

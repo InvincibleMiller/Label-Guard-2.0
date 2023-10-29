@@ -1,0 +1,39 @@
+.screen-container {
+  min-height: 100vh;
+  display: flex;
+  /* margin: auto; */
+  justify-content: center;
+}
+
+.feature-card {
+  border-radius: 8px;
+  background-color: white;
+  padding: 24px;
+}
+
+.feature-thumbnail {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 50%;
+
+  margin: auto;
+  display: block;
+  height: 60px;
+  width: 100%;
+  max-width: 60px;
+}
+
+.feature-top {
+  width: 100%;
+  max-width: 200px;
+  flex-shrink: 0;
+}
+
+.feature-section {
+  min-height: 50vh;
+  display: flex;
+}
+
+.feature-section > * {
+  margin: auto;
+}
