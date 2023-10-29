@@ -25,23 +25,23 @@ All the restaurant has to do is integrate "finding checks" into their shift, and
 
 Label Guard versions 2.0+ use this tech stack:
 
-- Node.js
+- Bootstrap
 - Express.js
+- Fauna DB (FQL v10)
+- Node.js
 - Next.js
 - React.js
-- Fauna DB (FQL v10)
-- Bootstrap
 
 This specific tech stack is absolutely incredible because it allows the benefits of Next.js, specifically dynamically rendering content, to be coupled with the versatility of Node + Express as a backend. Fauna DB is an incredible fast, serverless, NoSQL relational database.
 
 Various other libraries are used in the app:
 
-- Stripe
-- Zustand (State Management)
-- react-hook-form
+- Chart JS
 - cryptojs
 - Lodash
-- Nivo
+- react-hook-form
+- Stripe
+- Zustand (State Management)
 - etc.
 
 ### Back Story
