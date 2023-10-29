@@ -7,6 +7,8 @@ const {
 
 const login = {
   post: async (req, res, next) => {
+    const errorMessage = { message: "Invalid email or password!" };
+
     try {
       // Log the user in and store the session token
       const { email, password } = req.body;
@@ -77,7 +79,12 @@ const login = {
       return;
     } catch (error) {
       console.error(error);
-      next(error);
+      const { httpStatus } = error;
+      if (httpStatus !== undefined) {
+        res.status(httpStatus).json(errorMessage);
+      }
+
+      res.status(400).json(errorMessage);
     }
   },
 };
