@@ -241,6 +241,19 @@ const compileReport = async (req, res, next) => {
       ({ violation }) => violation
     );
 
+    // Add shifts with no score into the profile
+    // for scoring
+    shifts.forEach(({ name }) => {
+      if (!shiftProfiles[name]) {
+        shiftProfiles[name] = {
+          totalWeight: 0,
+          repeatOccurrences: 0,
+          occurrences: 0,
+          foundOn: [],
+        };
+      }
+    });
+
     res.status(200).json({
       findingProfiles,
       weightedByDate,

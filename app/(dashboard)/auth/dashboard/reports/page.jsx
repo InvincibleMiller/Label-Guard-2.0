@@ -98,46 +98,34 @@ export default function page() {
       datasets: [
         {
           label: " Findings",
-          data: Lo.map(
-            reportData.shiftProfiles,
-            ({ occurrences, repeatOccurrences }, key) => {
-              const stats = reportData.findingReportsPerShift[key];
-              if (!stats) {
-                return 0;
-              }
-
-              return Lo.round(
-                (occurrences + repeatOccurrences) / stats.daily,
-                2
-              );
+          data: Lo.map(reportData.shiftProfiles, ({ occurrences }, key) => {
+            const stats = reportData.findingReportsPerShift[key];
+            if (!stats) {
+              return 0;
             }
-          ),
+
+            return Lo.round(occurrences / stats.daily, 2);
+          }),
           ...datasetGenerics,
         },
       ],
     };
   }, [reportData]);
   const shiftContributionStats = useMemo(() => {
-    return Lo.map(
-      reportData.shiftProfiles,
-      ({ occurrences, repeatOccurrences }, key) => {
-        const stats = reportData.findingReportsPerShift[key];
-        if (!stats) {
-          return {
-            name: key,
-            contribution: 0,
-          };
-        }
-
+    return Lo.map(reportData.shiftProfiles, ({ occurrences }, key) => {
+      const stats = reportData.findingReportsPerShift[key];
+      if (!stats) {
         return {
           name: key,
-          contribution: Lo.round(
-            (occurrences + repeatOccurrences) / stats.daily,
-            2
-          ),
+          contribution: "lacks data",
         };
       }
-    ).sort((a, b) => b.contribution - a.contribution);
+
+      return {
+        name: key,
+        contribution: Lo.round(occurrences / stats.daily, 2),
+      };
+    }).sort((a, b) => b.contribution - a.contribution);
   }, [reportData]);
 
   // Rate of completion of minimum required reports
@@ -170,7 +158,7 @@ export default function page() {
   }, [reportData]);
   const shiftCompletionStats = useMemo(
     () =>
-      Lo.map(reportData.shiftProfiles, ({ value }, key) => {
+      Lo.map(reportData.shiftProfiles, (value, key) => {
         const calc = reportData.findingReportsPerShift[key];
         if (!calc) {
           return { name: key, score: 0 };
@@ -237,6 +225,29 @@ export default function page() {
     };
   }, [reportData]);
 
+  // Compute the average score by day and week
+  const averageStats = useMemo(() => {
+    if (!reportData.reportProfile) {
+      return {
+        day: "??",
+        week: "??",
+      };
+    }
+
+    return {
+      day: Lo.round(
+        reportData.reportProfile.totalWeight /
+          reportData.reportProfile.daysElapsed,
+        2
+      ),
+      week: Lo.round(
+        reportData.reportProfile.totalWeight /
+          reportData.reportProfile.weeksElapsed,
+        2
+      ),
+    };
+  }, [reportData]);
+
   useEffect(() => {
     (async () => {
       const url = `${
@@ -293,7 +304,7 @@ export default function page() {
         </div>
       </form>
       <div className="row mb-4 row-gap-4">
-        <div className="col-12 col-md-8">
+        <div className="col-12 col-lg-8">
           <div className="chart-container">
             <div className="chart-header">
               <h4 className="chart-title">Finding Calendar</h4>
@@ -301,13 +312,13 @@ export default function page() {
             <GradientChart data={calendarData} colors={calendarGradient} />
           </div>
         </div>
-        <div className="col-12 col-md-4">
+        <div className="col-12 col-md-6 col-lg-4 h-100">
           <div className="chart-container">
             <div className="chart-header">
               <h4 className="chart-title">Overall Score</h4>
               <p className="chart-subheading">(Lower is better)</p>
             </div>
-            <p className="mb-0">
+            <p className="">
               {`Over a period of ${
                 reportData?.reportProfile?.daysElapsed || "..."
               } days, `}
@@ -323,6 +334,19 @@ export default function page() {
               {"), and the total points counted against the score add up to "}
               <strong>{reportData?.reportProfile?.totalWeight}.</strong>
             </p>
+            <h6 className="text-center fw-bold">Average points (by)</h6>
+            <table className="table mb-0">
+              <tbody>
+                <tr>
+                  <th scope="row">Day</th>
+                  <td className="text-end">{averageStats.day}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Week</th>
+                  <td className="text-end">{averageStats.week}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
         <div className="col-12 col-md-6 col-lg-4">
@@ -347,13 +371,17 @@ export default function page() {
             Estimating the largest growth opportunities by shift by factoring in
             missing reports.
           </p>
-          <ol>
-            {shiftContributionStats.map((stats, i) => (
-              <li key={i}>
-                {stats.name}: {stats.contribution} points
-              </li>
-            ))}
-          </ol>
+          <h6 className="fw-bold text-center">Estimated points by shift</h6>
+          <table className="table">
+            <tbody>
+              {shiftContributionStats.map((stat, i) => (
+                <tr key={i}>
+                  <th scope="row">{stat.name}</th>
+                  <td className="text-end">{stat.contribution}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
         <div className="col-12 col-md-6 col-lg-4">
           <div className="chart-container mb-4">
@@ -398,14 +426,24 @@ export default function page() {
             Missed finding reports result in inaccurate scoring. Strive to
             complete all minimum reports to raise accuracy.
           </p>
-          <ol>
-            {shiftCompletionStats.map((stats, i) => (
-              <li key={i}>
-                {stats.name}: {Lo.round(stats.score, 2)}% (missed{" "}
-                {Lo.round(100 - stats.score, 2)}%)
-              </li>
-            ))}
-          </ol>
+          <table className="table">
+            <thead>
+              <tr>
+                <th scope="col">Shift</th>
+                <th scope="col">Caught</th>
+                <th scope="col">Missed</th>
+              </tr>
+            </thead>
+            <tbody>
+              {shiftCompletionStats.map((stat, i) => (
+                <tr key={i}>
+                  <td>{stat.name}</td>
+                  <td className="text-end">{Lo.round(stat.score, 2)}%</td>
+                  <td className="text-end">{Lo.round(100 - stat.score, 2)}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
         <div className="col-12 col-md-6 col-lg-4">
           <div className="chart-container mb-4">
