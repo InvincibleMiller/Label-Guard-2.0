@@ -2,7 +2,7 @@ import { client } from "@/sanity/lib/client";
 import { groq } from "next-sanity";
 import { map, keyBy } from "lodash";
 
-import { Hero, Features } from "@/components/PageComponents";
+import { Hero, Features, PriceSection } from "@/components/SSR/PageComponents";
 
 export default async function Home() {
   const revalidationTime = 1800;
@@ -47,6 +47,8 @@ export default async function Home() {
             return <Hero {...section} />;
           case "featureList":
             return <Features {...featureLists[section._key]} />;
+          case "priceSection":
+            return <PriceSection {...section} />;
         }
 
         return <p key={i}>{JSON.stringify(section)}</p>;

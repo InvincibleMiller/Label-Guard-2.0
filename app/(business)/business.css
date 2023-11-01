@@ -37,3 +37,13 @@
 .feature-section > * {
   margin: auto;
 }
+
+.price-card {
+  border: 1px solid gray;
+  border-radius: 8px;
+  padding: 24px;
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
+  background: white;
+}

@@ -1,6 +1,4 @@
-require("dotenv-flow").config({
-  
-});
+require("dotenv-flow").config();
 const express = require("express");
 const http = require("http");
 const next = require("next");
@@ -99,7 +97,7 @@ app.prepare().then(() => {
 
   // parsing middleware
   server.use(bodyParser.json());
-  server.use(bodyParser.urlencoded());
+  server.use(bodyParser.urlencoded({ extended: true }));
   server.use(cookieParser(process.env.COOKIE_PARSER_SECRET));
 
   // useful middleware during development
