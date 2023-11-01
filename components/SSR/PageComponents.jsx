@@ -1,4 +1,5 @@
 import { map, concat } from "lodash";
+import Link from "next/link";
 
 export function Hero({ cta, subtext }) {
   return (
@@ -19,7 +20,10 @@ export function Hero({ cta, subtext }) {
               }
             })}
           </h1>
-          <h2 className="display-3">{subtext}</h2>
+          <h2 className="display-3 mb-4">{subtext}</h2>
+          <Link href="/#price" className="btn btn-primary">
+            <h4 className="display-5 px-3">Sign Up</h4>
+          </Link>
         </div>
       </div>
     </div>
@@ -46,6 +50,29 @@ export function Features({ features }) {
               <p className="text-center m-auto">{f.description}</p>
             </div>
           ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function PriceSection({ price, description, period, packageName }) {
+  return (
+    <div
+      id="price"
+      className="container-fluid screen-container bg-body-tertiary"
+    >
+      <div className="price-card shadow">
+        <h4>{packageName}</h4>
+        <hr />
+        <div className="display-4 text-center mb-4">
+          ${price} {period}
+        </div>
+        <p className="text-center">{description}</p>
+        <div className="d-grid">
+          <Link href="/register" className="btn btn-primary">
+            <h4 className="mb-0">Sign Up</h4>
+          </Link>
         </div>
       </div>
     </div>

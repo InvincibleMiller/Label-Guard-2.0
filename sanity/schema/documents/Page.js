@@ -41,6 +41,7 @@ export default {
         }),
         defineArrayMember({ type: "featureList" }),
         defineArrayMember({ type: "hero" }),
+        defineArrayMember({ type: "priceSection" }),
       ],
     }),
   ],
