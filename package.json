@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@juggle/resize-observer": "^3.4.0",
     "@portabletext/react": "^3.0.11",
     "@sanity/client": "^6.7.0",
     "@sanity/image-url": "^1.0.2",
