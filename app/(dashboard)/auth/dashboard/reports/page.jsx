@@ -11,6 +11,8 @@ import { DateInput, SubmitButton } from "@/components/FormFields";
 
 import { GradientChart } from "@/components/Charts";
 
+import ResizeObserver from "@/components/ResizeObserver";
+
 import {
   Chart as ChartJS,
   ArcElement,
@@ -467,6 +469,7 @@ export default function page() {
           <p>{repeatRatio}% of findings are repeats.</p>
         </div>
       </div>
+      <ResizeObserver />
     </div>
   );
 }
